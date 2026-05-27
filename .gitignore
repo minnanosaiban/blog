@@ -5,3 +5,9 @@ venv/
 .env
 .DS_Store
 .streamlit/secrets.toml
+
+# Windows shortcuts (含む個人パス)
+*.lnk
+
+# 連載05 アプリ（記事は非公開、ローカルにデザイン参考として保管）
+/05_credit/
