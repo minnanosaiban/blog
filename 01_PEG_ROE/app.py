@@ -170,8 +170,8 @@ COLOR_MAP = {
     "中立": "#888888",
 }
 
-XLIM = (0.0, 3.0)
-YLIM = (-10.0, 50.0)
+XLIM = (0.0, 2.0)
+YLIM = (0.0, 20.0)
 
 # 表示範囲外は端に寄せて見えるようクリップ
 df_plot = df.copy()
@@ -202,20 +202,20 @@ fig = px.scatter(
     },
 )
 fig.update_traces(
-    marker=dict(size=14, line=dict(width=1.5, color="white")),
+    marker=dict(size=18, line=dict(width=1.5, color="white")),
     textposition="top center",
     textfont=dict(size=12, color="#202124"),
 )
 fig.update_xaxes(
     title="PEG（予想） ← 割安　割高 →",
     range=list(XLIM),
-    tickvals=[0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0],
+    tickvals=[0, 0.5, 1.0, 1.5, 2.0],
     showgrid=True, gridcolor="rgba(0,0,0,0.06)",
 )
 fig.update_yaxes(
     title="ROE（%） ← 低収益　高収益 →",
     range=list(YLIM),
-    tickvals=[-10, 0, 10, 20, 30, 40, 50],
+    tickvals=[0, 5, 10, 15, 20],
     showgrid=True, gridcolor="rgba(0,0,0,0.06)",
 )
 
@@ -232,23 +232,31 @@ for x0, x1, y0, y1, color in ZONE_FILL:
         type="rect", x0=x0, x1=x1, y0=y0, y1=y1,
         fillcolor=color, line=dict(width=0), layer="below",
     )
-fig.add_vline(x=PEG_TH, line_dash="dash", line_color="rgba(0,0,0,0.3)")
-fig.add_hline(y=ROE_TH, line_dash="dash", line_color="rgba(0,0,0,0.3)")
+fig.add_vline(x=PEG_TH, line_dash="dash", line_color="rgba(0,0,0,0.3)", line_width=0.8)
+fig.add_hline(y=ROE_TH, line_dash="dash", line_color="rgba(0,0,0,0.3)", line_width=0.8)
 
 fig.update_layout(
-    height=600,
-    legend=dict(
-        orientation="v",
-        yanchor="top", y=0.98,
-        xanchor="left", x=0.01,
-        bgcolor="rgba(255,255,255,0.85)",
-        bordercolor="rgba(0,0,0,0.1)",
-        borderwidth=1,
-    ),
-    margin=dict(t=20, b=40, l=40, r=20),
+    height=500,
+    showlegend=False,
+    margin=dict(t=30, b=40, l=40, r=20),
 )
 
 st.plotly_chart(fig, use_container_width=True)
+
+_c1, _c2 = st.columns([2, 1])
+with _c2:
+    st.caption("ラベルは銘柄コード。ホバーで銘柄情報が確認できます")
+    st.caption(
+        """
+**凡例**<br>
+🟩 緑　GARP 理想ゾーン<br>
+🟦 青　高品質 × 割高<br>
+🟧 橙　バリュートラップ警戒<br>
+🟥 赤　投資不適格<br>
+⬜ 灰　中立
+""",
+        unsafe_allow_html=True,
+    )
 
 
 # ── 詳細テーブル ──────────────────────────────────────────────
