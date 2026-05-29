@@ -1,8 +1,9 @@
 """
-連載05 Chart 1: 5分足ローソク + 日足ライン（複数銘柄）
+連載 Chart 1: 5分足ローソク + 騰落率テーブル（複数銘柄）
 
 - 銘柄コードを改行・カンマ・スペースで区切って複数入力
-- 5分足ローソク（縦の境界線でギャップ可視化）+ 日足ラインを Altair で表示
+- 5分足ローソク（縦の境界線でギャップ可視化）+ 出来高 + 日足ラインを Plotly で表示
+- 株価チャートと日次の騰落率テーブルを日付を揃えて並べる
 - 当日終値は yfinance.fast_info で上書き（5分足の末尾と公式引け値のズレを補正）
 
 起動: streamlit run app1.py
@@ -12,10 +13,11 @@ from __future__ import annotations
 import re
 from datetime import datetime, time, timedelta
 
-import altair as alt
 import pandas as pd
+import plotly.graph_objects as go
 import streamlit as st
 import yfinance as yf
+from plotly.subplots import make_subplots
 
 
 # ── ページ設定 + Wide / Narrow トグル ──────────────────────
@@ -37,8 +39,9 @@ st.sidebar.checkbox("Wide 表示", key="_wide_layout")
 if not st.session_state["_wide_layout"]:
     st.markdown(_NARROW_CSS, unsafe_allow_html=True)
 
-# Y 軸ラベル幅（左揃え用）
-Y_MIN_EXTENT = 50
+# 上昇は赤、下落は緑（日本式）
+C_UP = "#ef5350"
+C_DOWN = "#26a69a"
 
 
 # ── データ取得 ──────────────────────────────────────────────
@@ -99,76 +102,81 @@ def load_stock(code: str, end_dt: datetime, days: int) -> tuple[pd.DataFrame, pd
     return df_5min, df_daily
 
 
-# ── チャート定義 ────────────────────────────────────────────
-def daily_line_chart(df_daily: pd.DataFrame) -> alt.Chart:
+# ── チャート定義（Plotly） ──────────────────────────────────
+def daily_line_fig(df_daily: pd.DataFrame) -> go.Figure:
     """日足の終値ライン（右上の小さなチャート用）。"""
     df = df_daily.reset_index().rename(columns={"index": "Date"})[["Date", "Close"]]
-    return (
-        alt.Chart(df)
-        .mark_line(color="#FF4B4B", strokeWidth=1.5)
-        .encode(
-            x=alt.X("Date:T", title=None, axis=alt.Axis(format="%m月", grid=False)),
-            y=alt.Y("Close:Q", title=None, scale=alt.Scale(zero=False),
-                    axis=alt.Axis(minExtent=Y_MIN_EXTENT)),
-            tooltip=["Date", "Close"],
-        )
-        .properties(height=200)
+    fig = go.Figure(go.Scatter(
+        x=df["Date"], y=df["Close"], mode="lines",
+        line=dict(color="#FF4B4B", width=1.5),
+        hovertemplate="%{x|%Y-%m-%d}<br>%{y:,.1f}<extra></extra>",
+    ))
+    fig.update_layout(
+        height=200, margin=dict(l=46, r=10, t=10, b=20),
+        showlegend=False, plot_bgcolor="white", paper_bgcolor="white",
     )
+    fig.update_xaxes(title=None, tickformat="%-m月", showgrid=False)
+    fig.update_yaxes(title=None)
+    return fig
 
 
-def candle_chart(df_5min: pd.DataFrame) -> alt.VConcatChart:
+def candle_fig(df_5min: pd.DataFrame) -> go.Figure:
     """5分足ローソク + 出来高（日の境界線つき）。"""
     df = df_5min.copy()
     df["x"]    = df["Datetime"].dt.strftime("%y/%m/%d %H:%M")
     df["VolK"] = df["Volume"] / 1000
     df["date"] = df["Datetime"].dt.date
-    # その日最初の足（朝寄り）と昼寄り（12:30）にマーカー用のフラグを立てる
+    # その日最初の足（朝寄り）と昼寄り（12:30）にフラグを立てる
     df["is_am"] = df["Datetime"] == df.groupby("date")["Datetime"].transform("min")
     df["is_pm"] = df["Datetime"].dt.time == time(12, 30)
-    tick_xs = df[df["is_am"] | df["is_pm"]]["x"].unique().tolist()
 
-    # Y 軸: 高安に少し余白を持たせる
-    lo, hi = df["Close"].min(), df["Close"].max()
-    y_scale = alt.Scale(
-        domain=[float(lo - (hi - lo) * 0.05), float(hi + (hi - lo) * 0.05)],
-        zero=False,
+    fig = make_subplots(
+        rows=2, cols=1, shared_xaxes=True,
+        row_heights=[0.74, 0.26], vertical_spacing=0.02,
     )
 
-    # 上昇は赤、下落は緑（日本式）
-    color = alt.condition(
-        "datum.Open <= datum.Close",
-        alt.value("#ef5350"),
-        alt.value("#26a69a"),
+    # ローソク本体
+    fig.add_trace(go.Candlestick(
+        x=df["x"], open=df["Open"], high=df["High"], low=df["Low"], close=df["Close"],
+        increasing=dict(line=dict(color=C_UP), fillcolor=C_UP),
+        decreasing=dict(line=dict(color=C_DOWN), fillcolor=C_DOWN),
+        showlegend=False, name="",
+    ), row=1, col=1)
+
+    # 出来高
+    vol_color = [C_UP if o <= c else C_DOWN for o, c in zip(df["Open"], df["Close"])]
+    fig.add_trace(go.Bar(
+        x=df["x"], y=df["VolK"], marker_color=vol_color, opacity=0.5,
+        showlegend=False, name="",
+    ), row=2, col=1)
+
+    # 日付境界の縦線（午前=濃いめ / 午後=薄め）― チャート全体を貫く
+    for xv in df.loc[df["is_am"], "x"]:
+        fig.add_vline(x=xv, line=dict(color="#CCCCCC", width=1))
+    for xv in df.loc[df["is_pm"], "x"]:
+        fig.add_vline(x=xv, line=dict(color="#EEEEEE", width=1))
+
+    # 朝寄りの位置にだけ日付ラベルを表示
+    am_x = df.loc[df["is_am"], "x"].tolist()
+    am_label = df.loc[df["is_am"], "Datetime"].dt.strftime("%m/%d").tolist()
+
+    # Y 軸（高安に少し余白）
+    lo, hi = float(df["Low"].min()), float(df["High"].max())
+    pad = (hi - lo) * 0.05
+
+    fig.update_layout(
+        height=460, margin=dict(l=46, r=10, t=10, b=24),
+        xaxis_rangeslider_visible=False,
+        plot_bgcolor="white", paper_bgcolor="white", showlegend=False,
+        bargap=0,
     )
-
-    base = alt.Chart(df).encode(
-        x=alt.X("x:O", sort=None, axis=alt.Axis(
-            labels=False, values=tick_xs, grid=False, title=None,
-        )),
-    )
-
-    # 日付境界の縦線（午前=濃いめ、午後=薄め）
-    rule_am = alt.Chart(df[df["is_am"]]).mark_rule(color="#CCCCCC").encode(x="x:O")
-    rule_pm = alt.Chart(df[df["is_pm"]]).mark_rule(color="#EEEEEE").encode(x="x:O")
-
-    # ローソク本体（ヒゲ）
-    wick = base.mark_rule().encode(
-        y=alt.Y("Low:Q", scale=y_scale,
-                axis=alt.Axis(minExtent=Y_MIN_EXTENT, title=None)),
-        y2="High:Q",
-        color=color,
-    )
-    body = base.mark_bar().encode(y="Open:Q", y2="Close:Q", color=color)
-    candle = alt.layer(rule_am, rule_pm, wick, body)
-
-    # 出来高サブパネル
-    volume = base.mark_bar(opacity=0.5).encode(
-        y=alt.Y("VolK:Q",
-                axis=alt.Axis(orient="left", minExtent=Y_MIN_EXTENT, title=None)),
-        color=color,
-    ).properties(height=80)
-
-    return alt.vconcat(candle, volume).resolve_scale(x="shared").configure_view(strokeOpacity=0)
+    fig.update_xaxes(type="category", showgrid=False)
+    fig.update_xaxes(showticklabels=False, row=1, col=1)
+    fig.update_xaxes(tickmode="array", tickvals=am_x, ticktext=am_label,
+                     tickangle=0, row=2, col=1)
+    fig.update_yaxes(range=[lo - pad, hi + pad], row=1, col=1)
+    fig.update_yaxes(title=None)
+    return fig
 
 
 # ── 1銘柄ぶんの描画 ─────────────────────────────────────────
@@ -193,7 +201,7 @@ def render_ticker(code: str, df_5min: pd.DataFrame, df_daily: pd.DataFrame, name
         st.caption(f"📈 Max: {df_5min['High'].max():,.1f} JPY　　"
                    f"📉 Min: {df_5min['Low'].min():,.1f} JPY")
     with col_mini:
-        st.altair_chart(daily_line_chart(df_daily), width="stretch")
+        st.plotly_chart(daily_line_fig(df_daily), use_container_width=True)
 
     # 5分足を日次に集約し、可能なところは日足で上書き（精度補正）
     by_day = df_5min.groupby(df_5min["Datetime"].dt.date).agg(
@@ -227,9 +235,9 @@ def render_ticker(code: str, df_5min: pd.DataFrame, df_daily: pd.DataFrame, name
     by_day["騰落率"] = [chg_str(d) for d in by_day.index]
 
     # 5分足ローソク
-    st.altair_chart(candle_chart(df_5min), width="stretch")
+    st.plotly_chart(candle_fig(df_5min), use_container_width=True)
 
-    # 騰落率＋終値テーブル
+    # 騰落率＋終値テーブル（チャートと日付を揃える）
     table = by_day[["騰落率", "Close"]].rename(columns={"Close": "終値"})
     table.index = [d.strftime("%m/%d") for d in table.index]
     table["終値"] = table["終値"].apply(lambda x: f"{x:,.1f}" if isinstance(x, (int, float)) else x)
