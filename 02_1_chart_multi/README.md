@@ -1,6 +1,7 @@
-# 連載チャート01: 5分足チャート
+# 連載チャート02-1: 複数銘柄チャート比較
 
-複数銘柄の5分足ローソクチャートと騰落率テーブルを並べて表示する Streamlit アプリです。
+複数銘柄を4列カードグリッドで並べて比較する Streamlit アプリです。  
+各カードに90日エリアチャート・RSI・25MA乖離率・PER / PBR / 配当利回りを表示します。
 
 ![app](app.png)
 
@@ -8,9 +9,8 @@
 
 | ファイル | 内容 |
 |---|---|
-| `app.py` | メインアプリ。ローカル parquet から読み込み |
-| `app_simple.py` | 参考実装。yfinance から直接取得する簡易版 |
-| `fetch_prices.py` | yfinance で株価を取得して parquet に保存 |
+| `app.py` | メインアプリ |
+| `fetch_prices.py` | yfinance で日足を取得して parquet に保存 |
 
 ## セットアップ
 
@@ -19,17 +19,13 @@ pip install -r requirements.txt
 streamlit run app.py
 ```
 
-初回起動時はメイン画面に手順が表示されます。
-
 ## データの用意
 
 ### 株価データ（yfinance）
 
 アプリ内「⬛ データ取得」→「データ取得」を開き、**「株価を取得」** を押してください。
 
-保存先:
-- `data/prices/daily/{コード}.parquet`（日足）
-- `data/prices/5min/{コード}.parquet`（5分足）
+保存先: `data/prices/daily/{コード}.parquet`
 
 > **再配布制限**: Yahoo Finance のデータは利用規約により再配布禁止です。
 
@@ -45,6 +41,20 @@ TOPIX500 フィルタに使用します。
 ### 銘柄短縮名（stocks.csv）
 
 `data/master/stocks.csv` はリポジトリに同梱（著者作成・再配布可）。
+
+### 証券会社の指標データ（任意）
+
+PER / PBR / 配当利回りの表示に使用します。なくても RSI・25MA のみで動作します。  
+証券会社のサービスから以下の CSV を取得し `data/` 直下に配置してください。
+
+| ファイル名 | 内容 |
+|---|---|
+| `113_EPS.csv` | EPS実績 |
+| `213_EPS.csv` | EPS予想 |
+| `215_BPS.csv` | BPS予想 |
+| `141_配当金.csv` | 配当金 |
+
+> **再配布制限**: 証券会社が提供するデータは利用規約により再配布禁止です。
 
 ## ライセンス / 免責
 

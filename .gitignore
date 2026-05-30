@@ -16,3 +16,14 @@ venv/
 **/data/**/*.json
 **/data/**/*.parquet
 **/data/**/*.csv
+**/data/**/*.zip
+**/data/**/*.htm
+**/data/**/*.html
+**/data/**/*.xls
+**/data/**/*.xlsx
+
+# stocs.csv は著者作成のため再配布可
+!**/data/master/stocks.csv
+
+# TDnet 適時開示データ（data/ 配下以外に置かれるケース）
+**/earnings.csv

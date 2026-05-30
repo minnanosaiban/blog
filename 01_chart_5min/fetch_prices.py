@@ -1,8 +1,8 @@
 """
 5分足・日足を yfinance で取得して parquet に保存・追記する（連載01）。
 
-- 日足  : 長期（既定 2 年）→ data/prices/stocks/daily/{コード}.parquet
-- 5分足 : 直近約 60 日（yfinance の上限）→ data/prices/stocks/5min/{コード}.parquet
+- 日足  : 長期（既定 2 年）→ data/prices/daily/{コード}.parquet
+- 5分足 : 直近約 60 日（yfinance の上限）→ data/prices/5min/{コード}.parquet
 - 既存ファイルがあれば連結し、同一時刻の重複を落として追記
 - 株式分割をさかのぼって調整する auto_adjust=True を既定
 

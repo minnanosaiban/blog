@@ -357,18 +357,53 @@ with st.sidebar.expander("データ取得"):
 
     st.divider()
 
-    # ── 決算日時アップロード ────────────────────────────────
+    # ── 決算日時取得 ────────────────────────────────────────
     st.markdown("**決算日時（earnings.csv）**")
-    st.caption("`date,time,code` の3列CSVをアップロードすると保存します。")
-    uploaded = st.file_uploader("earnings.csv をアップロード",
-                                type="csv", label_visibility="collapsed")
-    btn_build = st.button("保存", use_container_width=True,
-                          disabled=uploaded is None)
+
+    # TDnet 自動取得
+    st.caption("TDnet から決算発表日時を自動取得します。")
+    import datetime as _dt
+    _col_s, _col_e = st.columns(2)
+    with _col_s:
+        tdnet_start = st.date_input("開始日",
+                                    value=_dt.date.today().replace(day=1))
+    with _col_e:
+        tdnet_end = st.date_input("終了日",
+                                  value=_dt.date.today())
+    btn_tdnet = st.button("TDnet から取得", use_container_width=True)
+
+    btn_build = False
+    uploaded  = None
 
 st.sidebar.divider()
 
 # ── メイン ──────────────────────────────────────────────────
-if btn_build and uploaded is not None:
+if btn_tdnet:
+    try:
+        _app_dir = str(Path(__file__).parent)
+        if _app_dir not in sys.path:
+            sys.path.insert(0, _app_dir)
+        from fetch_tdnet import build_earnings, business_days
+        _days = business_days(tdnet_start, tdnet_end)
+        if not _days:
+            st.warning("指定期間に営業日がありません。")
+        else:
+            bar = st.progress(0, text="TDnet を取得しています...")
+            def _cb(i, total, d):
+                bar.progress((i + 1) / total,
+                             text=f"取得中 {i+1}/{total}: {d}")
+            _df = build_earnings(tdnet_start, tdnet_end, progress_cb=_cb)
+            bar.empty()
+            if _df.empty:
+                st.warning("決算短信の開示が見つかりませんでした。")
+            else:
+                _df.to_csv(EARNINGS_CSV, index=False, encoding="utf-8-sig")
+                st.success(f"取得完了: {len(_df)} 件 → earnings.csv を更新しました")
+                st.cache_data.clear()
+    except Exception as e:
+        st.error(f"取得に失敗しました: {e}")
+
+elif btn_build and uploaded is not None:
     try:
         df_up = pd.read_csv(uploaded, dtype={"code": str})
         missing = [c for c in ["date", "time", "code"] if c not in df_up.columns]
@@ -492,16 +527,22 @@ else:
 
     # ── Step 2: earnings.csv ──
     if not has_earnings:
-        st.error(
-            "**Step 2: earnings.csv が必要です**  \n"
-            "左サイドバー「データ取得」→ `earnings.csv をアップロード` から  \n"
-            "`date,time,code` の3列CSVをアップロードしてください。  \n"
-            "```\ndate,time,code\n2026-05-09,15:30,5020\n2026-05-09,16:00,6758\n```"
+        st.error("**Step 2: 決算発表日時を取得してください**")
+        st.markdown(
+            "左サイドバー「⬛ データ取得」→「データ取得」を開き、  \n"
+            "**開始日・終了日を設定して「TDnet から取得」** を押してください。  \n\n"
+            "> 💡 見たい決算期の発表月を含む日付レンジを指定してください。  \n"
+            "> 例: 3月期決算（5月発表）→ 開始日 `2026-05-01`、終了日 `2026-05-31`"
         )
     else:
         try:
             _e = pd.read_csv(EARNINGS_CSV, dtype={"code": str})
-            st.success(f"✅ Step 2: earnings.csv あり（{len(_e)} 件）")
+            _e_dates = pd.to_datetime(_e["date"]).dt.date
+            _date_range = f"{_e_dates.min()} 〜 {_e_dates.max()}" if not _e.empty else "―"
+            st.success(
+                f"✅ Step 2: earnings.csv あり（{len(_e)} 件 / {_date_range}）  \n"
+                "古いデータを更新したい場合は「TDnet から取得」を再実行してください。"
+            )
         except Exception:
             st.warning("⚠️ Step 2: earnings.csv の読み込みに失敗しました")
 

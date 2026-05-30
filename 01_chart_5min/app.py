@@ -4,7 +4,7 @@
 - 銘柄コードを改行・カンマ・スペースで区切って複数入力、または TOPIX500 全銘柄を選択
 - 5分足ローソク（縦の境界線でギャップ可視化）+ 出来高 + 日足ラインを Plotly で表示
 - 株価チャートと日次の騰落率テーブルを日付を揃えて並べる
-- データは data/prices/stocks/{5min|daily}/{code}.parquet を使用
+- データは data/prices/{5min|daily}/{code}.parquet を使用
 
 起動: streamlit run 01_5min_chart/app.py
 """
@@ -333,7 +333,7 @@ if btn_fetch:
                 except Exception:
                     err += 1
             bar.empty()
-            st.success(f"取得完了: {ok} 銘柄成功 / {err} 失敗 → `data/prices/stocks/`")
+            st.success(f"取得完了: {ok} 銘柄成功 / {err} 失敗 → `data/prices/`")
             st.cache_data.clear()
         except Exception as e:
             st.error(f"取得に失敗しました: {e}")

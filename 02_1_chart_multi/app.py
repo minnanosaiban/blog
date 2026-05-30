@@ -3,7 +3,7 @@
 
 - 銘柄コードを複数入力（カンマ・スペース・改行区切り）
 - 各カード: 銘柄名 / 価格 / 騰落率 / エリア塗り終値チャート(90日) / RSI・指標1行
-- 日足データ : data/prices/stocks/daily/{code}.parquet
+- 日足データ : data/prices/daily/{code}.parquet
 - 業績指標   : data/{113,213,215,141}_*.csv（楽天MS2 CSVを手動配置）
 
 起動: streamlit run 02_multi_chart/app.py
@@ -371,7 +371,7 @@ if btn_fetch:
                 except Exception:
                     err += 1
             bar.empty()
-            st.success(f"取得完了: {ok} 銘柄成功 / {err} 失敗 → `data/prices/stocks/`")
+            st.success(f"取得完了: {ok} 銘柄成功 / {err} 失敗 → `data/prices/`")
             st.cache_data.clear()
         except Exception as e:
             st.error(f"取得に失敗しました: {e}")
