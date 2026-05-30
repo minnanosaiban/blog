@@ -25,7 +25,7 @@ import yfinance as yf
 # 既定の銘柄（石油元売3社）。コマンドライン引数で上書き可
 CODES = ["5020", "5019", "5021"]
 
-DATA_DIR  = Path(__file__).resolve().parent / "data" / "prices" / "stocks"
+DATA_DIR  = Path(__file__).resolve().parent / "data" / "prices"
 DIR_5MIN  = DATA_DIR / "5min"
 DIR_DAILY = DATA_DIR / "daily"
 
@@ -44,17 +44,14 @@ def _merge_save(path: Path, new: pd.DataFrame) -> int:
     return len(merged)
 
 
-def fetch_one(code: str) -> None:
+def fetch_one(code: str, period_daily: str = "2y", period_5min: str = "60d") -> None:
     symbol = f"{code}.T"
 
-    # 日足（長期）
-    df_d = yf.download(symbol, period="2y", interval="1d",
+    df_d = yf.download(symbol, period=period_daily, interval="1d",
                        auto_adjust=True, progress=False)
-    # 5分足（直近約 60 日が上限）
-    df_5 = yf.download(symbol, period="60d", interval="5m",
+    df_5 = yf.download(symbol, period=period_5min, interval="5m",
                        auto_adjust=True, progress=False)
 
-    # yfinance が MultiIndex で返すケースに対応
     for d in (df_d, df_5):
         if isinstance(d.columns, pd.MultiIndex):
             d.columns = d.columns.get_level_values(0)
