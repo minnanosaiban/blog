@@ -21,6 +21,9 @@ venv/
 **/data/**/*.html
 **/data/**/*.xls
 **/data/**/*.xlsx
+**/data/**/*.xml
+**/data/**/*.xsd
+**/data/**/*.txt
 
 # stocs.csv は著者作成のため再配布可
 !**/data/master/stocks.csv
