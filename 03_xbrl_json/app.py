@@ -17,7 +17,11 @@ from pathlib import Path
 
 import streamlit as st
 
-sys.path.insert(0, r"C:\stock_analysis")
+# XBRL → JSON 変換は著者環境のパーサー（C:\stock_analysis/collectors）に依存します。
+# 無い環境では「変換」は動きませんが、事前変換済み JSON を data/json/ に置けばアプリは動きます。
+_STOCK_ANALYSIS = Path(r"C:\stock_analysis")
+if _STOCK_ANALYSIS.exists():
+    sys.path.insert(0, str(_STOCK_ANALYSIS))
 
 DATA_XBRL = Path(__file__).parent / "data" / "xbrl"
 DATA_JSON  = Path(__file__).parent / "data" / "json"
@@ -75,23 +79,24 @@ def _normalize_yuho(d: dict) -> dict:
     cur = s5.get("current", {})
     pr1 = s5.get("prior1", {})
 
+    # 有報サマリーが持つのは「経常利益」（営業利益ではない）。ordinary_income として渡す
     d["performance"] = {
         "current": {
-            "net_sales":        cur.get("net_sales"),
-            "operating_income": cur.get("ordinary_income"),   # 有報は経常利益
-            "net_income":       cur.get("net_income"),
-            "eps":              cur.get("eps"),
+            "net_sales":       cur.get("net_sales"),
+            "ordinary_income": cur.get("ordinary_income"),
+            "net_income":      cur.get("net_income"),
+            "eps":             cur.get("eps"),
         },
         "prior_year": {
-            "net_sales":        pr1.get("net_sales"),
-            "operating_income": pr1.get("ordinary_income"),
-            "net_income":       pr1.get("net_income"),
-            "eps":              pr1.get("eps"),
+            "net_sales":       pr1.get("net_sales"),
+            "ordinary_income": pr1.get("ordinary_income"),
+            "net_income":      pr1.get("net_income"),
+            "eps":             pr1.get("eps"),
         },
         "change_pct": {
-            "net_sales":        _chg_pct(cur.get("net_sales"),        pr1.get("net_sales")),
-            "operating_income": _chg_pct(cur.get("ordinary_income"),  pr1.get("ordinary_income")),
-            "net_income":       _chg_pct(cur.get("net_income"),       pr1.get("net_income")),
+            "net_sales":       _chg_pct(cur.get("net_sales"),       pr1.get("net_sales")),
+            "ordinary_income": _chg_pct(cur.get("ordinary_income"), pr1.get("ordinary_income")),
+            "net_income":      _chg_pct(cur.get("net_income"),      pr1.get("net_income")),
         },
     }
     d["balance_sheet"] = {"current": {
@@ -139,6 +144,13 @@ def convert_pending() -> list[str]:
                 st.warning(f"{src.name}: XBRL 種別を判定できません")
                 continue
             done.append(src.name)
+        except ImportError:
+            st.warning(
+                f"{src.name}: XBRL→JSON パーサー（collectors）が見つかりません。"
+                "変換は著者環境のパーサーに依存しています（公開準備中）。"
+                "事前変換済みの JSON を `data/json/` に置いてご利用ください。"
+            )
+            break
         except Exception as e:
             st.warning(f"{src.name} の変換に失敗: {e}")
     return done
@@ -383,6 +395,14 @@ def extract_data_block(d: dict) -> str:
 
     company = _fix_name(meta.get("company_name")) or "—"
 
+    # 利益ラベル: 決算短信は「営業利益」、有報サマリーは「経常利益」を表示
+    if cur.get("operating_income") is not None:
+        inc_label, inc_key = "営業利益", "operating_income"
+    elif cur.get("ordinary_income") is not None:
+        inc_label, inc_key = "経常利益", "ordinary_income"
+    else:
+        inc_label, inc_key = "営業利益", "operating_income"
+
     lines = [
         "【基本情報】",
         f"銘柄       : {meta.get('code', '—')}　{company}",
@@ -392,7 +412,7 @@ def extract_data_block(d: dict) -> str:
         "",
         "【業績（当期 / 前期 / 前期比）】",
         f"売上高     : {_v(cur.get('net_sales'), OKU)} 億円 / {_v(pri.get('net_sales'), OKU)} 億円 / {_pct(chg.get('net_sales'))}",
-        f"営業利益   : {_v(cur.get('operating_income'), OKU)} 億円 / {_v(pri.get('operating_income'), OKU)} 億円 / {_pct(chg.get('operating_income'))}",
+        f"{inc_label}   : {_v(cur.get(inc_key), OKU)} 億円 / {_v(pri.get(inc_key), OKU)} 億円 / {_pct(chg.get(inc_key))}",
         f"税前利益   : {_v(cur.get('profit_before_tax'), OKU)} 億円 / {_v(pri.get('profit_before_tax'), OKU)} 億円 / {_pct(chg.get('profit_before_tax'))}",
         f"純利益     : {_v(cur.get('net_income'), OKU)} 億円 / {_v(pri.get('net_income'), OKU)} 億円 / {_pct(chg.get('net_income'))}",
         f"EPS        : {_v(cur.get('eps'))} 円 / {_v(pri.get('eps'))} 円",
@@ -663,7 +683,8 @@ elif btn_prompt and sel_file:
         memo=memo.strip() or "（特になし）",
     )
     st.subheader("生成プロンプト")
-    st.text_area("", value=prompt, height=600, label_visibility="collapsed")
+    st.caption("右上のアイコンでコピーできます。")
+    st.code(prompt, language="markdown")
     with st.expander("抽出データを確認"):
         st.text(data_block)
 
