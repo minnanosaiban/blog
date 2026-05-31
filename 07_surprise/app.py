@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import re
 import sys
+from datetime import datetime
 
 sys.path.insert(0, r"C:\stock_analysis")
 
@@ -113,6 +114,9 @@ def classify_surprise(df: pd.DataFrame, rev_th: float) -> pd.Series:
 
 # ── サイドバー ──────────────────────────────────────────────
 st.sidebar.markdown("# 連続サプライズ<br>スコアボード", unsafe_allow_html=True)
+today_obj = datetime.now()
+today_str = f"{today_obj.year}年{today_obj.month}月{today_obj.day}日"
+st.sidebar.caption(today_str)
 
 raw_codes = st.sidebar.text_area(
     "銘柄コード",
