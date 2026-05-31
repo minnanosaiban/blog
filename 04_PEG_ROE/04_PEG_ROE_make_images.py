@@ -8,7 +8,7 @@ blog/01_PEG_ROE銘柄分析.md 用の画像生成スクリプト。
   04_majors_charts.png   — 主要銘柄の直近6ヶ月株価チャート（小型グリッド）
   05_oil_charts.png      — 石油元売3社の直近6ヶ月株価チャート
 
-実行: python scripts/blog/01_PEG_ROE_make_images.py
+実行: python scripts/blog/04_PEG_ROE_make_images.py
 """
 from __future__ import annotations
 

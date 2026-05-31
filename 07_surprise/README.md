@@ -27,7 +27,7 @@ streamlit run app.py
 
 **チャート画像生成スクリプト**:
 ```bash
-python 04_surprise_score_make_images.py
+python 07_surprise_score_make_images.py
 ```
 
 ## 動作環境

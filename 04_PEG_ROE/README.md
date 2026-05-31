@@ -27,7 +27,7 @@ streamlit run app.py
 
 **チャート画像生成スクリプト**（Matplotlib で PNG 出力）:
 ```bash
-python 01_PEG_ROE_make_images.py
+python 04_PEG_ROE_make_images.py
 ```
 
 ## 動作環境
