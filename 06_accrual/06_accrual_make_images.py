@@ -396,7 +396,7 @@ def make_eneos_quality(df: pd.DataFrame) -> None:
 
     fig, (ax_top, ax_bot) = plt.subplots(2, 1, figsize=(12, 7.5),
                                           gridspec_kw=dict(height_ratios=[1.4, 1],
-                                                            hspace=0.3))
+                                                            hspace=0.42))
 
     x = np.arange(len(sub))
     bw = 0.35
@@ -423,7 +423,7 @@ def make_eneos_quality(df: pd.DataFrame) -> None:
     ax_top.annotate(
         "2022 ピーク年\n純利益 5,371 億円のうち\nCF 化は 2,095 億円 (39%)",
         xy=(i22, ni.iloc[i22]),
-        xytext=(i22 - 1.8, 7.0), textcoords="data",
+        xytext=(i22 - 1.8, 8.9), textcoords="data",
         fontsize=16, fontweight="bold", color="#c87878", ha="center",
         arrowprops=dict(arrowstyle="->", color="#c87878", lw=1.5),
         bbox=dict(facecolor="white", edgecolor="#c87878", boxstyle="round,pad=0.3"),
@@ -431,12 +431,13 @@ def make_eneos_quality(df: pd.DataFrame) -> None:
 
     ax_top.axhline(0, color="#444444", linewidth=0.8)
     ax_top.set_xticks(x)
-    ax_top.set_xticklabels(sub["fy"].values, fontsize=16)
+    ax_top.set_xticklabels([])  # 年ラベルは下段に集約（下段タイトルとの重なり防止）
+    ax_top.set_ylim(-3, 12.8)   # 上部に余白を作り凡例と注釈を縦に離す
     ax_top.set_ylabel("純利益・営業CF（千億円）",
                       fontsize=16, color=C_TEXT)
     ax_top.set_title("ＥＮＥＯＳ  ―  2022 ピーク利益はキャッシュで裏付けられていなかった",
                      fontsize=20, fontweight="bold", color=C_TEXT, pad=24, loc="left")
-    ax_top.legend(loc="upper left", fontsize=16, frameon=False)
+    ax_top.legend(loc="upper right", fontsize=16, frameon=False)
     ax_top.grid(axis="y", color=C_GRID, linewidth=0.5)
     for sp in ("top", "right"):
         ax_top.spines[sp].set_visible(False)
@@ -463,6 +464,7 @@ def make_eneos_quality(df: pd.DataFrame) -> None:
                    linewidth=0.7, alpha=0.7)
     ax_bot.set_xticks(x)
     ax_bot.set_xticklabels(sub["fy"].values, fontsize=16)
+    ax_bot.set_ylim(-0.11, 0.075)  # データラベルの余白を確保
     ax_bot.set_ylabel("アクルーアル比率", fontsize=16, color=C_TEXT)
     ax_bot.set_title("同年のアクルーアル比率（プラス = 純利益が CF を超過 = 警戒寄り）",
                      fontsize=16, fontweight="bold", color=C_TEXT, pad=24, loc="left")
