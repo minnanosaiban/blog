@@ -8,7 +8,7 @@ blog/01_PEG_ROE銘柄分析.md 用の画像生成スクリプト。
   04_majors_charts.png   — 主要銘柄の直近6ヶ月株価チャート（小型グリッド）
   05_oil_charts.png      — 石油元売3社の直近6ヶ月株価チャート
 
-実行: python scripts/blog/04_PEG_ROE_make_images.py
+実行: python scripts/blog/04_garp_peg_roe_make_images.py
 """
 from __future__ import annotations
 
@@ -59,7 +59,7 @@ C_TEXT       = "#202124"
 C_TEXT_SUB   = "#70757a"
 C_GRID       = "#eaeaea"
 
-OUT_DIR = Path(r"C:/minnanosaiban/hotline/docs/blog/posts/img/01_PEG_ROE")
+OUT_DIR = Path(r"C:/minnanosaiban/hotline/docs/blog/posts/img/04_garp_peg_roe")
 OUT_DIR.mkdir(parents=True, exist_ok=True)
 
 
@@ -255,7 +255,7 @@ def make_garp_map(df: pd.DataFrame, out_path: Path):
 
     ax.set_xlim(0, 3.0)
     ax.set_ylim(-5, 60)
-    ax.set_xlabel("PEG（予想）  ← 割安   割高 →", fontsize=17, color=C_TEXT_SUB)
+    ax.set_xlabel("PEG（予）  ← 割安   割高 →", fontsize=17, color=C_TEXT_SUB)
     ax.set_ylabel("ROE（%）  ← 低収益   高収益 →", fontsize=17, color=C_TEXT_SUB)
     ax.set_title("PEG × ROE GARP マップ — TOPIX 500 + 大型100 + 主要 15 社ハイライト",
                  fontsize=21, color=C_TEXT, fontweight="bold", pad=22)
@@ -414,7 +414,7 @@ def make_oil_card(df: pd.DataFrame, out_path: Path):
 
     ax.set_xlim(0, 1.5)
     ax.set_ylim(0, 20)
-    ax.set_xlabel("PEG（予想）", fontsize=16, color=C_TEXT_SUB)
+    ax.set_xlabel("PEG（予）", fontsize=16, color=C_TEXT_SUB)
     ax.set_ylabel("ROE（%）", fontsize=16, color=C_TEXT_SUB)
     # サブタイトルは suptitle に統合（ax.set_title は suptitle と重なるため除去）
     ax.grid(True, color=C_GRID, linewidth=0.8)

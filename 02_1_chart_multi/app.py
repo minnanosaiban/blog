@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import re
 import sys
+from datetime import datetime
 from pathlib import Path
 
 import pandas as pd
@@ -283,6 +284,9 @@ def render_card(code: str, metrics: pd.DataFrame | None) -> None:
 # ── サイドバー ──────────────────────────────────────────────
 st.sidebar.checkbox("Wide 表示", key="_wide_layout")
 st.sidebar.markdown("# 日足チャート", unsafe_allow_html=True)
+today_obj = datetime.now()
+today_str = f"{today_obj.year}年{today_obj.month}月{today_obj.day}日"
+st.sidebar.caption(today_str)
 st.sidebar.divider()
 
 # ── チャート表示 ────────────────────────────────────────────

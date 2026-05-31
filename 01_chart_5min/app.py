@@ -11,7 +11,7 @@
 from __future__ import annotations
 
 import re
-from datetime import time
+from datetime import datetime, time
 from pathlib import Path
 
 import pandas as pd
@@ -252,6 +252,9 @@ def render_ticker(code: str, df_5min: pd.DataFrame, df_daily: pd.DataFrame, name
 # ── サイドバー ──────────────────────────────────────────────
 st.sidebar.checkbox("Wide 表示", key="_wide_layout")
 st.sidebar.markdown("# 5分足チャート", unsafe_allow_html=True)
+today_obj = datetime.now()
+today_str = f"{today_obj.year}年{today_obj.month}月{today_obj.day}日"
+st.sidebar.caption(today_str)
 st.sidebar.divider()
 
 # ── チャート表示 ────────────────────────────────────────────
