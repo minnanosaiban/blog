@@ -8,11 +8,11 @@
 
 ## ファイル
 
-| ファイル | 内容 |
-|---|---|
-| `app.py` | メインアプリ。ローカル parquet から読み込み |
-| `app_simple.py` | **おまけ**。株価のダウンロード不要。ひとつの pyファイルでチャートを表示できます |
-| `fetch_prices.py` | yfinance で株価を取得して parquet に保存 |
+| ファイル | 種別 | 内容 |
+|---|---|---|
+| `app.py` | Streamlit アプリ | メインアプリ。ローカル parquet から読み込み |
+| `app_simple.py` | Streamlit アプリ | **おまけ**。株価のダウンロード不要。ひとつの pyファイルでチャートを表示できます |
+| `fetch_prices.py` | 株価取得 | yfinance で株価を取得して parquet に保存 |
 
 ## セットアップ
 

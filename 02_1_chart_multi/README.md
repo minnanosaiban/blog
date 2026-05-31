@@ -9,10 +9,10 @@
 
 ## ファイル
 
-| ファイル | 内容 |
-|---|---|
-| `app.py` | メインアプリ |
-| `fetch_prices.py` | yfinance で日足を取得して parquet に保存 |
+| ファイル | 種別 | 内容 |
+|---|---|---|
+| `app.py` | Streamlit アプリ | メインアプリ |
+| `fetch_prices.py` | 株価取得 | yfinance で日足を取得して parquet に保存 |
 
 ## セットアップ
 

@@ -10,12 +10,12 @@
 
 ## ファイル
 
-| ファイル | 内容 |
-|---|---|
-| `app.py` | メインアプリ |
-| `fetch_prices.py` | yfinance で株価を取得して parquet に保存 |
-| `fetch_tdnet.py` | TDnet から決算発表日時を取得して earnings.csv を生成 |
-| `build_earnings.py` | ローカルの TDnet CSV から earnings.csv を生成（著者環境用） |
+| ファイル | 種別 | 内容 |
+|---|---|---|
+| `app.py` | Streamlit アプリ | メインアプリ |
+| `fetch_prices.py` | 株価取得 | yfinance で株価を取得して parquet に保存 |
+| `fetch_tdnet.py` | 決算日時取得 | TDnet から決算発表日時を取得して earnings.csv を生成 |
+| `build_earnings.py` | データ整形 | ローカルの TDnet CSV から earnings.csv を生成（著者環境用） |
 
 ## セットアップ
 

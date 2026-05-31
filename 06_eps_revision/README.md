@@ -4,6 +4,13 @@
 
 連載記事: [EPS リビジョン・モメンタムで「出遅れ買い候補」を発掘する](https://minnanosaiban.github.io/hotline/blog/2026/05/20/03_eps_revision_momentum/)
 
+## ファイル
+
+| ファイル | 種別 | 内容 |
+|---|---|---|
+| `app.py` | Streamlit アプリ | インタラクティブダッシュボード |
+| `06_revision_momentum_make_images.py` | Matplotlib チャート生成 | 記事用チャート画像（リビジョン分布・4象限散布図）を PNG 出力 |
+
 ## データについて
 
 本リポジトリには **コードのみ** を公開しています。データは同梱していません。

@@ -4,6 +4,13 @@
 
 連載記事: [マルチファクターで銘柄を採点する ― スコアボードで「全方位優等生」を発見する](https://minnanosaiban.github.io/hotline/blog/2026/05/20/02_multifactor_scoreboard/)
 
+## ファイル
+
+| ファイル | 種別 | 内容 |
+|---|---|---|
+| `app.py` | Streamlit アプリ | インタラクティブダッシュボード |
+| `05_multifactor_make_images.py` | Matplotlib チャート生成 | 記事用チャート画像（スコアボード・レーダー・散布図）を PNG 出力 |
+
 ## データについて
 
 本リポジトリには **コードのみ** を公開しています。データは同梱していません。

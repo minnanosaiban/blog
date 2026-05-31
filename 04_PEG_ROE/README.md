@@ -4,6 +4,13 @@ PEG × ROE で「成長と割安の両立」を発掘する GARP（Growth At a R
 
 連載記事: [PEG × ROE で「成長と割安の両立銘柄」を発掘する ― GARP の理論と実践](https://minnanosaiban.github.io/hotline/blog/2026/05/20/01_garp_peg_roe/)
 
+## ファイル
+
+| ファイル | 種別 | 内容 |
+|---|---|---|
+| `app.py` | Streamlit アプリ | インタラクティブダッシュボード |
+| `04_PEG_ROE_make_images.py` | Matplotlib チャート生成 | 記事用チャート画像（GARP マップ・テーブル・株価チャート）を PNG 出力 |
+
 ## データについて
 
 本リポジトリには **コードのみ** を公開しています。データは同梱していません。

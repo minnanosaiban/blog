@@ -4,6 +4,13 @@
 
 連載記事: [連続サプライズ・スコアボードで「業績モメンタムが本物の銘柄」を発掘する](https://minnanosaiban.github.io/hotline/blog/2026/05/20/04_surprise_scoreboard/)
 
+## ファイル
+
+| ファイル | 種別 | 内容 |
+|---|---|---|
+| `app.py` | Streamlit アプリ | インタラクティブダッシュボード |
+| `07_surprise_score_make_images.py` | Matplotlib チャート生成 | 記事用チャート画像（サプライズスコア・4象限マトリクス）を PNG 出力 |
+
 ## データについて
 
 本リポジトリには **コードのみ** を公開しています。データは同梱していません。
