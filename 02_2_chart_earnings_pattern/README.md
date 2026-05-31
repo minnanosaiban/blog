@@ -20,11 +20,16 @@
 ## セットアップ
 
 ```bash
+# このリポジトリは連載全体の 1 フォルダです
+git clone https://github.com/minnanosaiban/blog.git
+cd blog/02_2_chart_earnings_pattern
+
+# 依存パッケージをインストールして起動
 pip install -r requirements.txt
 streamlit run app.py
 ```
 
-初回起動時はメイン画面に Step 1 / Step 2 の手順が表示されます。
+初回起動時はメイン画面に Step 1 / Step 2 の手順が表示されます。続けて下記「データの用意」を参照してください。
 
 ## データの用意
 
@@ -60,7 +65,7 @@ TOPIX500 フィルタに使用します。
 
 ### 銘柄短縮名（stocks.csv）
 
-`data/master/stocks.csv` はリポジトリに同梱（著者作成・再配布可）。
+`data/master/stocks.csv` はリポジトリに同梱。
 
 ## パターン分類のしきい値
 

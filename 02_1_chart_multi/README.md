@@ -17,9 +17,16 @@
 ## セットアップ
 
 ```bash
+# このリポジトリは連載全体の 1 フォルダです
+git clone https://github.com/minnanosaiban/blog.git
+cd blog/02_1_chart_multi
+
+# 依存パッケージをインストールして起動
 pip install -r requirements.txt
 streamlit run app.py
 ```
+
+初回起動時はメイン画面に手順が表示されます。続けて下記「データの用意」を参照してください。
 
 ## データの用意
 
