@@ -1,14 +1,14 @@
-# 連載09: アクルーアル分析
+# 連載06: アクルーアル分析
 
 営業キャッシュフローと純利益の乖離から「利益の質」を評価するアクルーアル分析ツールです。
 
-連載記事: [アクルーアル分析で「利益の質」を見極める](https://minnanosaiban.github.io/hotline/blog/2026/05/21/09_accrual_analysis/)
+連載記事: [アクルーアル分析で「利益の質」を見極める](https://minnanosaiban.github.io/hotline/blog/2026/05/21/06_accrual_analysis/)
 
 ## ファイル
 
 | ファイル | 種別 | 内容 |
 |---|---|---|
-| `09_accrual_make_images.py` | Matplotlib チャート生成 | 記事用チャート画像（アクルーアル7年推移・純利益 vs 営業CF・散布図）を PNG 出力 |
+| `06_accrual_make_images.py` | Matplotlib チャート生成 | 記事用チャート画像（アクルーアル7年推移・純利益 vs 営業CF・散布図）を PNG 出力 |
 
 ## データについて
 
@@ -18,7 +18,7 @@
 
 ## 動作環境
 
-`09_accrual_make_images.py` は `C:\stock_analysis` 配下のユーティリティモジュールとデータに依存しています。別環境で動かす場合はデータ取得部をご自身の環境に合わせて書き換えてください。
+`06_accrual_make_images.py` は `C:\stock_analysis` 配下のユーティリティモジュールとデータに依存しています。別環境で動かす場合はデータ取得部をご自身の環境に合わせて書き換えてください。
 
 ## ライセンス / 免責
 

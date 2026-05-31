@@ -1,14 +1,14 @@
-# 連載12: CAR イベントスタディ
+# 連載09: CAR イベントスタディ
 
 決算発表前後の累積超過リターン（CAR）を分析し、株価が織り込むパターンを定量評価するツールです。
 
-連載記事: [CAR イベントスタディで「決算株価の織り込み」を定量分析する](https://minnanosaiban.github.io/hotline/blog/2026/05/21/12_car_event_study/)
+連載記事: [CAR イベントスタディで「決算株価の織り込み」を定量分析する](https://minnanosaiban.github.io/hotline/blog/2026/05/21/09_car_event_study/)
 
 ## ファイル
 
 | ファイル | 種別 | 内容 |
 |---|---|---|
-| `12_car_make_images.py` | Matplotlib チャート生成 | 記事用チャート画像（CAR 分布・ウィンドウ別サマリ・短期 vs 長期散布図）を PNG 出力 |
+| `09_car_make_images.py` | Matplotlib チャート生成 | 記事用チャート画像（CAR 分布・ウィンドウ別サマリ・短期 vs 長期散布図）を PNG 出力 |
 
 ## データについて
 
@@ -19,7 +19,7 @@
 
 ## 動作環境
 
-`12_car_make_images.py` は `C:\stock_analysis` 配下のユーティリティモジュールとデータに依存しています。別環境で動かす場合はデータ取得部をご自身の環境に合わせて書き換えてください。
+`09_car_make_images.py` は `C:\stock_analysis` 配下のユーティリティモジュールとデータに依存しています。別環境で動かす場合はデータ取得部をご自身の環境に合わせて書き換えてください。
 
 ## ライセンス / 免責
 

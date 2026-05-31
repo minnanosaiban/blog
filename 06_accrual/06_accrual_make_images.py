@@ -8,7 +8,7 @@ blog/10_アクルーアル.md 用の画像生成スクリプト。
   04_ni_cf_scatter.png          — 91 サンプルの純利益 × 営業CF 散布図
   05_eneos_quality.png          — ENEOS の 2022 ピーク利益の質を可視化
 
-実行: python scripts/blog/09_accrual_analysis_make_images.py
+実行: python scripts/blog/08_accrual_analysis_make_images.py
 """
 from __future__ import annotations
 
@@ -50,7 +50,7 @@ C_TEXT = "#202124"
 C_TEXT_SUB = "#70757a"
 C_GRID = "#eaeaea"
 
-OUT_DIR = Path(r"C:/minnanosaiban/hotline/docs/blog/posts/img/09_accrual_analysis")
+OUT_DIR = Path(r"C:/minnanosaiban/hotline/docs/blog/posts/img/06_accrual_analysis")
 OUT_DIR.mkdir(parents=True, exist_ok=True)
 
 

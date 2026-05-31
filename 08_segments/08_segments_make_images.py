@@ -52,7 +52,7 @@ C_TEXT = "#202124"
 C_TEXT_SUB = "#70757a"
 C_GRID = "#eaeaea"
 
-OUT_DIR = Path(r"C:/minnanosaiban/hotline/docs/blog/posts/img/11_segment_analysis")
+OUT_DIR = Path(r"C:/minnanosaiban/hotline/docs/blog/posts/img/08_segment_analysis")
 OUT_DIR.mkdir(parents=True, exist_ok=True)
 
 
