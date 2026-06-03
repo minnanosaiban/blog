@@ -22,6 +22,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib as mpl
+import _blog_style as bs
 from matplotlib.patches import FancyBboxPatch
 from matplotlib.lines import Line2D
 
@@ -32,22 +33,8 @@ from utils.universe_topix500 import filter_to_topix500, topix_large100_codes
 
 
 # ── デザイン設定 ────────────────────────────────────────────────────────────
-mpl.rcParams["font.family"] = ["Yu Gothic", "Meiryo", "MS Gothic", "Noto Sans JP"]
-mpl.rcParams["axes.unicode_minus"] = False
-mpl.rcParams["figure.facecolor"] = "white"
-mpl.rcParams["axes.facecolor"] = "white"
-mpl.rcParams["savefig.facecolor"] = "white"
-mpl.rcParams["savefig.bbox"] = "tight"
-mpl.rcParams["savefig.dpi"] = 144
-mpl.rcParams["savefig.pad_inches"] = 0  # 左右余白なし（上下は _savefig_vpad で制御）
-mpl.rcParams["axes.titlepad"] = 30
-# フォントサイズ（800px カラムで 1872px 画像 → 約 43% に圧縮されるため底上げ）
-mpl.rcParams["font.size"] = 16
-mpl.rcParams["axes.titlesize"] = 20
-mpl.rcParams["axes.labelsize"] = 16
-mpl.rcParams["xtick.labelsize"] = 16
-mpl.rcParams["ytick.labelsize"] = 16
-mpl.rcParams["legend.fontsize"] = 16
+bs.apply_rcparams()
+FIG_W = bs.FIG_W
 
 # カラーパレット
 C_GARP_IDEAL = "#5a9a72"  # 緑: GARP理想ゾーン
@@ -63,20 +50,7 @@ OUT_DIR = Path(r"C:/minnanosaiban/hotline/docs/blog/posts/img/04_garp_peg_roe")
 OUT_DIR.mkdir(parents=True, exist_ok=True)
 
 
-def _savefig_vpad(fig: plt.Figure, path: Path,
-                  tpad: float = 0.4, bpad: float = 0.5) -> None:
-    """上 tpad / 下 bpad インチの余白を追加して保存する（左右は余白なし）。"""
-    import io
-    import numpy as np
-    buf = io.BytesIO()
-    fig.savefig(buf, bbox_inches="tight", pad_inches=0, format="png")
-    buf.seek(0)
-    img = plt.imread(buf)                            # RGBA float32 (H, W, 4)
-    top_rows = max(1, round(tpad * fig.dpi))
-    bot_rows = max(1, round(bpad * fig.dpi))
-    white_top = np.ones((top_rows, img.shape[1], img.shape[2]), dtype=img.dtype)
-    white_bot = np.ones((bot_rows, img.shape[1], img.shape[2]), dtype=img.dtype)
-    plt.imsave(str(path), np.vstack([white_top, img, white_bot]), dpi=fig.dpi)
+_savefig_vpad = bs.savefig_uniform   # 横幅も統一して保存（共通モジュール）
 
 
 # ── データ準備 ─────────────────────────────────────────────────────────────
@@ -183,7 +157,7 @@ _LABEL_WITH_LINE = {
 
 
 def make_garp_map(df: pd.DataFrame, out_path: Path):
-    fig, ax = plt.subplots(figsize=(13, 8))
+    fig, ax = plt.subplots(figsize=(FIG_W, 8))
 
     # 全銘柄（背景の薄いドット）
     bg = df.dropna(subset=["PEG", "ROE"]).copy()
@@ -258,7 +232,7 @@ def make_garp_map(df: pd.DataFrame, out_path: Path):
     ax.set_xlabel("PEG（予）  ← 割安   割高 →", fontsize=17, color=C_TEXT_SUB)
     ax.set_ylabel("ROE（%）  ← 低収益   高収益 →", fontsize=17, color=C_TEXT_SUB)
     ax.set_title("PEG × ROE GARP マップ — TOPIX 500 + 大型100 + 主要 15 社ハイライト",
-                 fontsize=21, color=C_TEXT, fontweight="bold", pad=22)
+                 fontsize=21, color=C_TEXT, fontweight="bold", pad=38)
     ax.grid(True, color=C_GRID, linewidth=0.8)
     ax.spines["top"].set_visible(False)
     ax.spines["right"].set_visible(False)
@@ -318,7 +292,7 @@ def make_majors_table(df: pd.DataFrame, out_path: Path):
     tbl = tbl.sort_values("GARPスコア", ascending=False, na_position="last").reset_index(drop=True)
 
     # 描画
-    fig, ax = plt.subplots(figsize=(13, 0.60 * len(tbl) + 1.73))
+    fig, ax = plt.subplots(figsize=(FIG_W, 0.60 * len(tbl) + 1.73))
     ax.axis("off")
 
     # ヘッダ
@@ -384,9 +358,9 @@ def make_majors_table(df: pd.DataFrame, out_path: Path):
 def make_oil_card(df: pd.DataFrame, out_path: Path):
     df_idx = df.set_index("コード")
 
-    fig = plt.figure(figsize=(13, 6.5))
+    fig = plt.figure(figsize=(FIG_W, 6.5))
     gs = fig.add_gridspec(1, 2, width_ratios=[1.4, 1.0], wspace=0.18,
-                          left=0.06, right=0.97, top=0.88, bottom=0.03)
+                          left=0.06, right=0.97, top=0.83, bottom=0.03)
 
     # 左: GARPマップ拡大
     ax = fig.add_subplot(gs[0, 0])
@@ -561,7 +535,7 @@ def make_charts_grid(df: pd.DataFrame, codes: list[tuple[str, str]],
     n = len(codes)
     rows = (n + cols - 1) // cols
     fig, axes = plt.subplots(rows, cols,
-                             figsize=(cols * col_w, rows * row_h + 1.0))
+                             figsize=(FIG_W, rows * row_h + 1.0))
     if rows == 1 and cols == 1:
         axes = np.array([[axes]])
     elif rows == 1:
@@ -588,7 +562,7 @@ def make_charts_grid(df: pd.DataFrame, codes: list[tuple[str, str]],
         axes[r][c].axis("off")
 
     fig.suptitle(title, fontsize=21, color=C_TEXT, fontweight="bold", y=0.98)
-    fig.subplots_adjust(top=0.86, bottom=0.0, left=0.03, right=0.97,
+    fig.subplots_adjust(top=0.81, bottom=0.0, left=0.03, right=0.97,
                         hspace=0.30, wspace=0.18)
 
     _savefig_vpad(fig, out_path)

@@ -1,12 +1,12 @@
 ﻿"""
-blog/11_三角検証.md 用の画像生成スクリプト。
+blog/11_予想検証.md 用の画像生成スクリプト。
 
 生成画像:
   01_triangulation_concept.png — 3 ソース×3 ペア比較の概念図
-  02_quadrant_scatter.png      — ガイダンスvs実績 × コンセンサスvsガイダンス 4 象限散布図
+  02_quadrant_scatter.png      — ガイダンスvs業績 × コンセンサスvsガイダンス 4 象限散布図
   03_upside_top10.png          — 上方修正期待 Top10（保守ガイダンス×アナリスト強気）
   04_downside_top10.png        — 達成困難 Top10（強気ガイダンス×アナリスト懐疑）
-  05_trading_companies.png     — 総合商社 8 社の三角検証 × アクルーアル接続
+  05_trading_companies.png     — 総合商社 8 社の予想検証 × アクルーアル接続
 
 実行: python scripts/blog/10_triangulation_make_images.py
 """
@@ -22,6 +22,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib as mpl
+import _blog_style as bs
 from matplotlib.patches import FancyBboxPatch, FancyArrowPatch, Rectangle
 
 from config.paths import rakunav_file
@@ -29,23 +30,10 @@ from utils.master_names import apply_master_names
 
 
 # ── デザイン設定 ────────────────────────────────────────────────────────────
-mpl.rcParams["font.family"] = ["Yu Gothic", "Meiryo", "MS Gothic", "Noto Sans JP"]
-mpl.rcParams["axes.unicode_minus"] = False
-mpl.rcParams["figure.facecolor"] = "white"
-mpl.rcParams["axes.facecolor"] = "white"
-mpl.rcParams["savefig.facecolor"] = "white"
-mpl.rcParams["savefig.bbox"] = "tight"
-mpl.rcParams["savefig.dpi"] = 144
-mpl.rcParams["savefig.pad_inches"] = 0        # left/right/top: no padding
-mpl.rcParams["axes.titlepad"] = 30
-mpl.rcParams["font.size"] = 16
-mpl.rcParams["axes.titlesize"] = 20
-mpl.rcParams["axes.labelsize"] = 16
-mpl.rcParams["xtick.labelsize"] = 16
-mpl.rcParams["ytick.labelsize"] = 16
-mpl.rcParams["legend.fontsize"] = 16
+bs.apply_rcparams()
+FIG_W = bs.FIG_W
 
-C_ACT  = "#444444"  # 実績
+C_ACT  = "#444444"  # 業績
 C_GUI  = "#777777"  # ガイダンス
 C_CONS = "#aaaaaa"  # コンセンサス
 C_UP   = "#5a9a72"  # 上方修正期待
@@ -58,17 +46,7 @@ OUT_DIR = Path(r"C:/minnanosaiban/hotline/docs/blog/posts/img/07_triangulation")
 OUT_DIR.mkdir(parents=True, exist_ok=True)
 
 
-def _savefig_vpad(fig: plt.Figure, path: Path, bpad: float = 0.5) -> None:
-    """下のみ bpad インチの余白を追加して保存する（上・左右は余白なし）。"""
-    import io
-    import numpy as np
-    buf = io.BytesIO()
-    fig.savefig(buf, bbox_inches="tight", pad_inches=0, format="png")
-    buf.seek(0)
-    img = plt.imread(buf)                            # RGBA float32 (H, W, 4)
-    pad_rows = max(1, round(bpad * fig.dpi))
-    white = np.ones((pad_rows, img.shape[1], img.shape[2]), dtype=img.dtype)
-    plt.imsave(str(path), np.vstack([img, white]), dpi=fig.dpi)
+_savefig_vpad = bs.savefig_uniform   # 横幅も統一して保存（共通モジュール）
 
 
 STMTS = Path(r"C:/stock_analysis/data/statements")
@@ -137,64 +115,52 @@ def load_triangulation() -> pd.DataFrame:
     return m
 
 
-# ── 1) 三角検証の概念図 ────────────────────────────────────────────────────
+# ── 1) 予想検証の概念図 ────────────────────────────────────────────────────
 def make_concept() -> None:
-    fig, ax = plt.subplots(figsize=(13, 7))
-    ax.set_xlim(0, 11)
-    ax.set_ylim(0, 7)
+    fig, ax = plt.subplots(figsize=(FIG_W, 8))
+    ax.set_xlim(0, 12)
+    ax.set_ylim(0, 9.6)
     ax.axis("off")
 
-    # 3 頂点
+    # 3 頂点（業績=頂点・ガイダンス=左下・コンセンサス=右下：サムネイルと同配置）
     nodes = {
-        "actual":   (2.0, 5.8, C_ACT,  "実績\n（決算短信 actual FY）", "data/statements/{code}_*_FY.json"),
-        "guidance": (9.0, 5.8, C_GUI,  "ガイダンス\n（決算短信 forecast FY）", "data/statements/{code}_*_forecast_FY.json"),
-        "consensus": (5.5, 1.2, C_CONS, "アナリスト\nコンセンサス\n（rakunav 213 EPS予）", "data/rakunav/213_EPS.csv"),
+        "actual":    (6.0, 7.3, C_ACT,  "業績", "会社の確定業績"),
+        "guidance":  (2.3, 2.2, C_GUI,  "ガイダンス", "会社の来期予想"),
+        "consensus": (9.7, 2.2, C_CONS, "コンセンサス", "アナリスト平均予想"),
     }
-    for key, (x, y, color, label, src) in nodes.items():
-        ax.add_patch(FancyBboxPatch((x - 1.5, y - 0.7), 3.0, 1.4,
+    for key, (x, y, color, label, sub) in nodes.items():
+        ax.add_patch(FancyBboxPatch((x - 1.7, y - 0.7), 3.4, 1.4,
                                     boxstyle="round,pad=0.08",
-                                    linewidth=2.2, edgecolor=color,
+                                    linewidth=2.4, edgecolor=color,
                                     facecolor="white"))
-        ax.text(x, y + 0.15, label, ha="center", va="center",
-                fontsize=16, fontweight="bold", color=color)
-        ax.text(x, y - 0.45, src, ha="center", va="center",
-                fontsize=16, color=C_TEXT_SUB, style="italic")
+        ax.text(x, y + 0.18, label, ha="center", va="center",
+                fontsize=19, fontweight="bold", color=color)
+        ax.text(x, y - 0.42, sub, ha="center", va="center",
+                fontsize=14, color=C_TEXT_SUB)
 
-    # 3 ペア
-    pairs = [
-        # 上辺: ガイダンス vs 実績
-        ((nodes["actual"][0]+1.5, nodes["actual"][1]),
-         (nodes["guidance"][0]-1.5, nodes["guidance"][1]),
-         "ガイダンス − 実績\nプラス = 強気 / マイナス = 保守"),
-        # 右辺: コンセンサス vs ガイダンス
-        ((nodes["guidance"][0]-0.3, nodes["guidance"][1]-0.7),
-         (nodes["consensus"][0]+1.2, nodes["consensus"][1]+0.3),
-         "コンセンサス − ガイダンス\nプラス = アナリスト強気"),
-        # 左辺: コンセンサス vs 実績
-        ((nodes["actual"][0]+0.3, nodes["actual"][1]-0.7),
-         (nodes["consensus"][0]-1.2, nodes["consensus"][1]+0.3),
-         "コンセンサス − 実績\nアナリストの来期成長期待"),
+    a, g, c = nodes["actual"], nodes["guidance"], nodes["consensus"]
+    # 3 辺（ペア比較）
+    edges = [
+        (a, g, "ガイダンス − 業績\n＋ 強気 / − 保守", -1.0),
+        (a, c, "コンセンサス − 業績\n来期の成長期待", 1.0),
+        (g, c, "コンセンサス − ガイダンス\n＋ アナリスト強気", 0.0),
     ]
-    for (x1, y1), (x2, y2), label in pairs:
-        a = FancyArrowPatch((x1, y1), (x2, y2),
-                            arrowstyle="<->", mutation_scale=22,
-                            color="#888888", linewidth=1.5)
-        ax.add_patch(a)
-        # ラベル
-        mx, my = (x1 + x2) / 2, (y1 + y2) / 2
-        ax.text(mx, my, label, fontsize=16, ha="center", va="center",
+    for n1, n2, label, dx in edges:
+        ax.add_patch(FancyArrowPatch((n1[0], n1[1]), (n2[0], n2[1]),
+                     arrowstyle="<->", mutation_scale=20,
+                     color="#bbbbbb", linewidth=1.6, shrinkA=46, shrinkB=46))
+        mx, my = (n1[0] + n2[0]) / 2 + dx, (n1[1] + n2[1]) / 2
+        ax.text(mx, my, label, fontsize=15, ha="center", va="center",
                 color="#444444", fontweight="bold",
                 bbox=dict(facecolor="white", edgecolor="#cccccc",
-                          boxstyle="round,pad=0.25"))
+                          boxstyle="round,pad=0.3"))
 
-    ax.text(5.5, 6.7, "三角検証  ―  3 ソース × 3 ペア比較",
-            fontsize=20, fontweight="bold", color=C_TEXT,
-            ha="center", va="center")
-    ax.text(5.5, 0.2,
-            "保守ガイダンス × アナリスト強気 = 上方修正期待大\n"
-            "強気ガイダンス × アナリスト懐疑 = 達成困難",
-            fontsize=16, ha="center", va="center",
-            color=C_TEXT_SUB, style="italic")
+    ax.text(6.0, 8.9, "予想検証  ―  3 ソースを三角形で比較",
+            fontsize=20, fontweight="bold", color=C_TEXT, ha="center", va="center")
+    ax.text(6.0, 0.5,
+            "保守ガイダンス × アナリスト強気 → 上方修正期待大\n"
+            "強気ガイダンス × アナリスト懐疑 → 達成困難",
+            fontsize=15, ha="center", va="center", color=C_TEXT_SUB, style="italic")
 
     _savefig_vpad(fig, OUT_DIR / "01_triangulation_concept.png")
     plt.close(fig)
@@ -202,7 +168,7 @@ def make_concept() -> None:
 
 # ── 2) 4 象限散布図 ────────────────────────────────────────────────────────
 def make_quadrant_scatter(m: pd.DataFrame) -> None:
-    fig, ax = plt.subplots(figsize=(13, 8))
+    fig, ax = plt.subplots(figsize=(FIG_W, 8))
 
     sub = m[m["guide_vs_actual_pct"].between(-100, 100) &
             m["consensus_vs_guide_pct"].between(-50, 100)]
@@ -269,13 +235,13 @@ def make_quadrant_scatter(m: pd.DataFrame) -> None:
 
     ax.set_xlim(-100, 100)
     ax.set_ylim(-50, 100)
-    ax.set_xlabel("ガイダンス − 実績（%）  ← 保守     強気 →",
+    ax.set_xlabel("ガイダンス − 業績（%）  ← 保守     強気 →",
                   fontsize=16, color=C_TEXT)
     ax.set_ylabel("コンセンサス − ガイダンス（%）  ← 懐疑    強気 →",
                   fontsize=16, color=C_TEXT)
-    ax.set_title(f"三角検証 4 象限マップ  ―  決算短信 211 銘柄",
+    ax.set_title(f"予想検証 4 象限マップ  ―  決算短信 211 銘柄",
                  fontsize=20, fontweight="bold", color=C_TEXT,
-                 pad=14, loc="left")
+                 pad=30, loc="left")
     ax.grid(color=C_GRID, linewidth=0.5)
     for sp in ("top", "right"):
         ax.spines[sp].set_visible(False)
@@ -291,13 +257,13 @@ def make_upside_top10(m: pd.DataFrame) -> None:
     sub = sub[sub["consensus_vs_guide_pct"] < 500]  # 極端値除外
     top = sub.nlargest(10, "consensus_vs_guide_pct").iloc[::-1]
 
-    fig, ax = plt.subplots(figsize=(13.5, 7))
+    fig, ax = plt.subplots(figsize=(FIG_W, 7))
     y = np.arange(len(top))
     bw = 0.35
 
     ax.barh(y - bw / 2, top["guide_vs_actual_pct"], height=bw,
             color="#85c1e9", alpha=0.85, edgecolor="white", linewidth=0.8,
-            label="ガイダンス − 実績（左軸）")
+            label="ガイダンス − 業績（左軸）")
     ax.barh(y + bw / 2, top["consensus_vs_guide_pct"], height=bw,
             color=C_UP, alpha=0.85, edgecolor="white", linewidth=0.8,
             label="コンセンサス − ガイダンス（右軸）")
@@ -326,7 +292,7 @@ def make_upside_top10(m: pd.DataFrame) -> None:
         ax.spines[sp].set_visible(False)
     ax.set_title(
         "★ 上方修正期待 Top 10  ―  保守ガイダンス × アナリスト強気",
-        fontsize=20, fontweight="bold", color=C_TEXT, pad=24, loc="left",
+        fontsize=20, fontweight="bold", color=C_TEXT, pad=40, loc="left",
     )
     _savefig_vpad(fig, OUT_DIR / "03_upside_top10.png")
     plt.close(fig)
@@ -338,13 +304,13 @@ def make_downside_top10(m: pd.DataFrame) -> None:
     sub = sub[sub["guide_vs_actual_pct"] < 500]  # 極端値除外
     top = sub.nsmallest(10, "consensus_vs_guide_pct").iloc[::-1]
 
-    fig, ax = plt.subplots(figsize=(13.5, 7))
+    fig, ax = plt.subplots(figsize=(FIG_W, 7))
     y = np.arange(len(top))
     bw = 0.35
 
     ax.barh(y - bw / 2, top["guide_vs_actual_pct"], height=bw,
             color="#f1c40f", alpha=0.85, edgecolor="white", linewidth=0.8,
-            label="ガイダンス − 実績（強気プラス）")
+            label="ガイダンス − 業績（強気プラス）")
     ax.barh(y + bw / 2, top["consensus_vs_guide_pct"], height=bw,
             color=C_WARN, alpha=0.85, edgecolor="white", linewidth=0.8,
             label="コンセンサス − ガイダンス（懐疑マイナス）")
@@ -371,15 +337,15 @@ def make_downside_top10(m: pd.DataFrame) -> None:
         ax.spines[sp].set_visible(False)
     ax.set_title(
         "⚠ 達成困難 Top 10  ―  強気ガイダンス × アナリスト懐疑",
-        fontsize=20, fontweight="bold", color=C_TEXT, pad=24, loc="left",
+        fontsize=20, fontweight="bold", color=C_TEXT, pad=40, loc="left",
     )
     _savefig_vpad(fig, OUT_DIR / "04_downside_top10.png")
     plt.close(fig)
 
 
-# ── 5) 総合商社 8 社の三角検証 × 連載10 アクルーアル接続 ──────────────────
+# ── 5) 総合商社 8 社の予想検証 × 連載10 アクルーアル接続 ──────────────────
 def make_trading_companies(m: pd.DataFrame) -> None:
-    """総合商社 8 社の三角検証 + 連載10 で算出した平均アクルーアル比率を並べる。"""
+    """総合商社 8 社の予想検証 + 連載10 で算出した平均アクルーアル比率を並べる。"""
     # 連載10 と共通の総合商社・エネルギー 8 社
     targets = [
         ("8053", "住友商事",   -0.0075),
@@ -392,11 +358,6 @@ def make_trading_companies(m: pd.DataFrame) -> None:
         ("2768", "双日",       -0.0009),
     ]
 
-    fig, axes = plt.subplots(1, 2, figsize=(14, 6),
-                             gridspec_kw=dict(width_ratios=[1.3, 1], wspace=0.35))
-
-    # 左: 三角検証バー（ガイダンス vs 実績、コンセンサス vs ガイダンス）
-    ax_l = axes[0]
     rows = []
     for code, label, accr in targets:
         r = m.loc[m["code"] == code]
@@ -410,63 +371,94 @@ def make_trading_companies(m: pd.DataFrame) -> None:
         })
     rdf = pd.DataFrame(rows)
 
+    fig, axes = plt.subplots(1, 2, figsize=(FIG_W, 7.8),
+                             gridspec_kw=dict(width_ratios=[1.5, 1], wspace=0.26))
+    fig.subplots_adjust(top=0.67, bottom=0.12, left=0.16, right=0.985)
+
     y = np.arange(len(rdf))
-    bw = 0.35
-    ax_l.barh(y - bw / 2, rdf["ga"], height=bw,
-              color="#85c1e9", alpha=0.85, edgecolor="white", linewidth=0.8,
-              label="ガイダンス − 実績")
-    ax_l.barh(y + bw / 2, rdf["cg"], height=bw,
-              color=C_CONS, alpha=0.85, edgecolor="white", linewidth=0.8,
-              label="コンセンサス − ガイダンス")
+    bw = 0.38
+
+    # ── 左: 予想検証バー（ガイダンス vs 業績、コンセンサス vs ガイダンス）──────
+    # 住友商事の +311.6% が突出して他 7 社を潰すため、表示域を ±X_LIM にクリップし
+    # 軸外に出る値は「▶ 値」で注記する（全社のバーを読める状態に保つ）。
+    ax_l = axes[0]
+    X_MIN, X_MAX = -90, 95
+    C_GA, C_CG = "#5aa0d8", "#9aa0a6"          # ガイダンス−業績 / コンセンサス−ガイダンス
+    C_GA_TXT, C_CG_TXT = "#1f6fb0", "#5f6368"  # 値ラベル（薄すぎず読める濃さ）
+
+    ax_l.barh(y - bw / 2, rdf["ga"].clip(X_MIN, X_MAX), height=bw,
+              color=C_GA, alpha=0.92, edgecolor="white", linewidth=0.8,
+              label="ガイダンス − 業績（会社）")
+    ax_l.barh(y + bw / 2, rdf["cg"].clip(X_MIN, X_MAX), height=bw,
+              color=C_CG, alpha=0.92, edgecolor="white", linewidth=0.8,
+              label="コンセンサス − ガイダンス（アナリスト）")
+
+    def _bar_label(ax, val, ypos, color):
+        """バー端に値を表示。軸外の値は端に寄せて ▶ / ◀ で注記。"""
+        if val > X_MAX:
+            ax.text(X_MAX - 2, ypos, f"{val:+.1f}% ▶", va="center", ha="right",
+                    fontsize=17, color=color, fontweight="bold")
+        elif val < X_MIN:
+            ax.text(X_MIN + 2, ypos, f"◀ {val:+.1f}%", va="center", ha="left",
+                    fontsize=17, color=color, fontweight="bold")
+        else:
+            ax.text(val + (1.6 if val >= 0 else -1.6), ypos, f"{val:+.1f}%",
+                    va="center", ha="left" if val >= 0 else "right",
+                    fontsize=17, color=color, fontweight="bold")
 
     for i, r in rdf.iterrows():
-        ax_l.text(r["ga"] + (1 if r["ga"] >= 0 else -1), i - bw / 2,
-                  f"{r['ga']:+.1f}%", va="center",
-                  ha="left" if r["ga"] >= 0 else "right",
-                  fontsize=16, color="#3498db", fontweight="bold")
-        ax_l.text(r["cg"] + (1 if r["cg"] >= 0 else -1), i + bw / 2,
-                  f"{r['cg']:+.1f}%", va="center",
-                  ha="left" if r["cg"] >= 0 else "right",
-                  fontsize=16, color=C_CONS, fontweight="bold")
+        _bar_label(ax_l, r["ga"], i - bw / 2, C_GA_TXT)
+        _bar_label(ax_l, r["cg"], i + bw / 2, C_CG_TXT)
 
-    ax_l.axvline(0, color="#444444", linewidth=0.8)
+    ax_l.axvline(0, color="#444444", linewidth=1.0)
+    ax_l.set_xlim(X_MIN, X_MAX)
     ax_l.set_yticks(y)
     ax_l.set_yticklabels([f"{r['code']} {r['label']}" for _, r in rdf.iterrows()],
-                         fontsize=16)
-    ax_l.set_xlabel("乖離率（%）", fontsize=16, color=C_TEXT_SUB)
-    ax_l.legend(loc="lower right", fontsize=16, frameon=False)
-    ax_l.grid(axis="x", color=C_GRID, linewidth=0.5)
+                         fontsize=19)
+    ax_l.set_xlabel("乖離率（%）　　← 保守 / 懐疑　　　強気 →",
+                    fontsize=18, color=C_TEXT)
+    ax_l.tick_params(axis="x", labelsize=17)
+    ax_l.legend(loc="center right", bbox_to_anchor=(0.995, 0.27),
+                fontsize=14, frameon=True,
+                facecolor="white", edgecolor="#dddddd")
+    ax_l.grid(axis="x", color=C_GRID, linewidth=0.6)
     for sp in ("top", "right"):
         ax_l.spines[sp].set_visible(False)
-    ax_l.set_title("三角検証（連載11）",
-                   fontsize=16, fontweight="bold", color=C_TEXT, pad=24, loc="left")
+    ax_l.set_title("予想検証（連載11）：業績予想の強気・保守",
+                   fontsize=21, fontweight="bold", color=C_TEXT, pad=30, loc="left")
 
-    # 右: 連載10 のアクルーアル比率
+    # ── 右: 連載10 のアクルーアル比率 ──────────────────────────────────
     ax_r = axes[1]
     colors = ["#5a9a72" if a < -0.01 else "#85c1e9" if a < 0 else "#F39C12"
               for a in rdf["accrual"]]
-    ax_r.barh(y, rdf["accrual"], color=colors, alpha=0.85,
-              edgecolor="white", linewidth=0.8)
+    ax_r.barh(y, rdf["accrual"], color=colors, alpha=0.92,
+              edgecolor="white", linewidth=0.8, height=0.6)
     for i, r in rdf.iterrows():
-        ax_r.text(r["accrual"] - 0.001, i, f"{r['accrual']:+.4f}",
+        ax_r.text(r["accrual"] - 0.0013, i, f"{r['accrual']:+.4f}",
                   va="center", ha="right",
                   fontsize=16, color=C_TEXT, fontweight="bold")
-    ax_r.axvline(-0.05, color="#5a9a72", linestyle="--", linewidth=0.7, alpha=0.6)
-    ax_r.axvline(0, color="#999999", linewidth=0.7)
+    ax_r.axvline(0, color="#999999", linewidth=0.9)
     ax_r.set_yticks(y)
     ax_r.set_yticklabels([""] * len(rdf))
-    ax_r.set_xlabel("7 年平均アクルーアル比率", fontsize=16, color=C_TEXT_SUB)
+    ax_r.set_xlabel("7 年平均アクルーアル比率　　← 健全（利益の質 高い）",
+                    fontsize=18, color=C_TEXT)
+    ax_r.tick_params(axis="x", labelsize=17)
     ax_r.set_xlim(-0.05, 0.01)
-    ax_r.grid(axis="x", color=C_GRID, linewidth=0.5)
+    ax_r.grid(axis="x", color=C_GRID, linewidth=0.6)
     for sp in ("top", "right"):
         ax_r.spines[sp].set_visible(False)
-    ax_r.set_title("アクルーアル（連載10）",
-                   fontsize=16, fontweight="bold", color=C_TEXT, pad=24, loc="left")
+    ax_r.set_title("アクルーアル（連載10）：利益の質",
+                   fontsize=21, fontweight="bold", color=C_TEXT, pad=30, loc="left")
 
     fig.suptitle(
-        "総合商社 8 社  ―  三角検証 × アクルーアル の合流  ―  健全な利益の質 × 保守ガイダンス × アナリスト強気",
-        fontsize=20, fontweight="bold", color=C_TEXT, y=1.02,
+        "総合商社 8 社 ― 利益の質（アクルーアル）× 業績予想（予想検証）のクロス検証",
+        fontsize=25, fontweight="bold", color=C_TEXT, y=0.985,
     )
+    fig.text(0.5, 0.900,
+             "8 社とも利益の質は健全。予想検証では住友商事だけが"
+             "「保守ガイダンス × アナリスト強気（＝上方修正期待）」を維持",
+             ha="center", va="center", fontsize=15, color=C_TEXT_SUB)
+
     _savefig_vpad(fig, OUT_DIR / "05_trading_companies.png")
     plt.close(fig)
 
@@ -474,7 +466,7 @@ def make_trading_companies(m: pd.DataFrame) -> None:
 # ── main ──────────────────────────────────────────────────────────────────
 if __name__ == "__main__":
     m = load_triangulation()
-    print(f"[load] {len(m)} 銘柄で三角検証可能")
+    print(f"[load] {len(m)} 銘柄で予想検証可能")
 
     make_concept()
     print("[ok] 01_triangulation_concept.png")

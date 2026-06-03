@@ -22,25 +22,13 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib as mpl
+import _blog_style as bs
 from matplotlib.patches import Rectangle
 
 
 # ── デザイン設定 ────────────────────────────────────────────────────────────
-mpl.rcParams["font.family"] = ["Yu Gothic", "Meiryo", "MS Gothic", "Noto Sans JP"]
-mpl.rcParams["axes.unicode_minus"] = False
-mpl.rcParams["figure.facecolor"] = "white"
-mpl.rcParams["axes.facecolor"] = "white"
-mpl.rcParams["savefig.facecolor"] = "white"
-mpl.rcParams["savefig.bbox"] = "tight"
-mpl.rcParams["savefig.dpi"] = 144
-mpl.rcParams["savefig.pad_inches"] = 0        # left/right/top: no padding
-mpl.rcParams["axes.titlepad"] = 30
-mpl.rcParams["font.size"] = 16
-mpl.rcParams["axes.titlesize"] = 20
-mpl.rcParams["axes.labelsize"] = 16
-mpl.rcParams["xtick.labelsize"] = 16
-mpl.rcParams["ytick.labelsize"] = 16
-mpl.rcParams["legend.fontsize"] = 16
+bs.apply_rcparams()
+FIG_W = bs.FIG_W
 
 C_TEXT = "#202124"
 C_TEXT_SUB = "#70757a"
@@ -50,17 +38,7 @@ OUT_DIR = Path(r"C:/minnanosaiban/hotline/docs/blog/posts/img/03_xbrl_to_json")
 OUT_DIR.mkdir(parents=True, exist_ok=True)
 
 
-def _savefig_vpad(fig: plt.Figure, path: Path, bpad: float = 0.5) -> None:
-    """下のみ bpad インチの余白を追加して保存する（上・左右は余白なし）。"""
-    import io
-    import numpy as np
-    buf = io.BytesIO()
-    fig.savefig(buf, bbox_inches="tight", pad_inches=0, format="png")
-    buf.seek(0)
-    img = plt.imread(buf)                            # RGBA float32 (H, W, 4)
-    pad_rows = max(1, round(bpad * fig.dpi))
-    white = np.ones((pad_rows, img.shape[1], img.shape[2]), dtype=img.dtype)
-    plt.imsave(str(path), np.vstack([img, white]), dpi=fig.dpi)
+_savefig_vpad = bs.savefig_uniform   # 横幅も統一して保存（共通モジュール）
 
 YUHO = Path(r"C:/stock_analysis/data/yuho")
 
@@ -96,9 +74,9 @@ def load_oil_series() -> pd.DataFrame:
 
 # ── 1) 売上高 / 自己資本比率 7 年 ─────────────────────────────────────────
 def make_revenue(df: pd.DataFrame) -> None:
-    fig, (ax_l, ax_r) = plt.subplots(1, 2, figsize=(13, 5.5),
+    fig, (ax_l, ax_r) = plt.subplots(1, 2, figsize=(FIG_W, 5.5),
                                      gridspec_kw=dict(wspace=0.28))
-    fig.subplots_adjust(top=0.80)
+    fig.subplots_adjust(top=0.75)
 
     # 左: 売上高（規模）
     for _, name, color in OIL_3:
@@ -108,7 +86,7 @@ def make_revenue(df: pd.DataFrame) -> None:
     ax_l.set_xlabel("会計年度", fontsize=16, color=C_TEXT_SUB)
     ax_l.set_ylabel("売上高（兆円）", fontsize=16, color=C_TEXT)
     ax_l.set_title("売上高 7 年推移", fontsize=16, fontweight="bold",
-                   color=C_TEXT, pad=24, loc="left")
+                   color=C_TEXT, pad=40, loc="left")
     ax_l.legend(loc="best", fontsize=15, frameon=False)
     ax_l.grid(color=C_GRID, linewidth=0.5)
     for sp in ("top", "right"):
@@ -122,7 +100,7 @@ def make_revenue(df: pd.DataFrame) -> None:
     ax_r.set_xlabel("会計年度", fontsize=16, color=C_TEXT_SUB)
     ax_r.set_ylabel("自己資本比率（%）", fontsize=16, color=C_TEXT)
     ax_r.set_title("自己資本比率 7 年推移", fontsize=16, fontweight="bold",
-                   color=C_TEXT, pad=24, loc="left")
+                   color=C_TEXT, pad=40, loc="left")
     ax_r.legend(loc="best", fontsize=15, frameon=False)
     ax_r.grid(color=C_GRID, linewidth=0.5)
     for sp in ("top", "right"):
@@ -136,9 +114,9 @@ def make_revenue(df: pd.DataFrame) -> None:
 
 # ── 2) 純利益 / ROE 7 年 ──────────────────────────────────────────────────
 def make_ni_roe(df: pd.DataFrame) -> None:
-    fig, (ax_l, ax_r) = plt.subplots(1, 2, figsize=(13, 6),
+    fig, (ax_l, ax_r) = plt.subplots(1, 2, figsize=(FIG_W, 6),
                                      gridspec_kw=dict(wspace=0.28))
-    fig.subplots_adjust(top=0.80)
+    fig.subplots_adjust(top=0.75)
 
     for _, name, color in OIL_3:
         sub = df[df["name"] == name].sort_values("fy")
@@ -150,7 +128,7 @@ def make_ni_roe(df: pd.DataFrame) -> None:
     ax_l.set_xlabel("会計年度", fontsize=16, color=C_TEXT_SUB)
     ax_l.set_ylabel("純利益（千億円）", fontsize=16, color=C_TEXT)
     ax_l.set_title("純利益 7 年推移",
-                   fontsize=16, fontweight="bold", color=C_TEXT, pad=24, loc="left")
+                   fontsize=16, fontweight="bold", color=C_TEXT, pad=40, loc="left")
     ax_l.grid(color=C_GRID, linewidth=0.5)
     for sp in ("top", "right"):
         ax_l.spines[sp].set_visible(False)
@@ -190,7 +168,7 @@ def make_ni_roe(df: pd.DataFrame) -> None:
     ax_r.set_xlabel("会計年度", fontsize=16, color=C_TEXT_SUB)
     ax_r.set_ylabel("ROE（%）", fontsize=16, color=C_TEXT)
     ax_r.set_title("ROE 7 年推移",
-                   fontsize=16, fontweight="bold", color=C_TEXT, pad=24, loc="left")
+                   fontsize=16, fontweight="bold", color=C_TEXT, pad=40, loc="left")
     ax_r.legend(loc="lower right", fontsize=14, frameon=False)
     ax_r.grid(color=C_GRID, linewidth=0.5)
     for sp in ("top", "right"):
@@ -204,7 +182,7 @@ def make_ni_roe(df: pd.DataFrame) -> None:
 
 # ── 3) CF 3 種 7 年 ──────────────────────────────────────────────────────
 def make_cf(df: pd.DataFrame) -> None:
-    fig, axes = plt.subplots(1, 3, figsize=(15, 5),
+    fig, axes = plt.subplots(1, 3, figsize=(FIG_W, 5),
                              gridspec_kw=dict(wspace=0.3))
 
     for ax, (_, name, color) in zip(axes, OIL_3):
@@ -267,7 +245,7 @@ def make_data_depth() -> None:
     arr = np.array([row[1] for row in categories])
     labels = [row[0] for row in categories]
 
-    fig, ax = plt.subplots(figsize=(11, 7))
+    fig, ax = plt.subplots(figsize=(FIG_W, 7))
 
     CELL_COLORS = {0: "#eeeeee", 0.4: "#cde0f5", 0.6: "#93bfe0", 1: "#3a7ebf"}
     TEXT_COLORS = {0: "#999999", 0.4: "#404040", 0.6: "#202124", 1: "white"}
@@ -316,7 +294,7 @@ def make_data_depth() -> None:
 def make_eneos_peakout(df: pd.DataFrame) -> None:
     sub = df[df["name"] == "ＥＮＥＯＳ"].sort_values("fy").reset_index(drop=True)
 
-    fig, ax_ni = plt.subplots(figsize=(13, 5.5))
+    fig, ax_ni = plt.subplots(figsize=(FIG_W, 5.5))
     ax_roe = ax_ni.twinx()
 
     x = sub["fy"]
@@ -368,7 +346,7 @@ def make_eneos_peakout(df: pd.DataFrame) -> None:
         ax_roe.spines[sp].set_visible(False)
 
     ax_ni.set_title("ＥＮＥＯＳ  ―  2022 ピークから 2025 へのピークアウト構図",
-                    fontsize=16, fontweight="bold", color=C_TEXT, pad=24, loc="left")
+                    fontsize=16, fontweight="bold", color=C_TEXT, pad=40, loc="left")
 
     ax_ni.legend(loc="upper left", fontsize=16, frameon=False)
     ax_roe.legend(loc="upper right", fontsize=16, frameon=False)

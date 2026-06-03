@@ -22,27 +22,15 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib as mpl
+import _blog_style as bs
 from matplotlib.patches import FancyBboxPatch, FancyArrowPatch
 
 from utils.master_names import load_price_targets_names
 
 
 # ── デザイン設定 ────────────────────────────────────────────────────────────
-mpl.rcParams["font.family"] = ["Yu Gothic", "Meiryo", "MS Gothic", "Noto Sans JP"]
-mpl.rcParams["axes.unicode_minus"] = False
-mpl.rcParams["figure.facecolor"] = "white"
-mpl.rcParams["axes.facecolor"] = "white"
-mpl.rcParams["savefig.facecolor"] = "white"
-mpl.rcParams["savefig.bbox"] = "tight"
-mpl.rcParams["savefig.dpi"] = 144
-mpl.rcParams["savefig.pad_inches"] = 0        # left/right/top: no padding
-mpl.rcParams["axes.titlepad"] = 30
-mpl.rcParams["font.size"] = 16
-mpl.rcParams["axes.titlesize"] = 20
-mpl.rcParams["axes.labelsize"] = 16
-mpl.rcParams["xtick.labelsize"] = 16
-mpl.rcParams["ytick.labelsize"] = 16
-mpl.rcParams["legend.fontsize"] = 16
+bs.apply_rcparams()
+FIG_W = bs.FIG_W
 
 C_GOOD = "#5a9a72"
 C_BAD  = "#c87878"
@@ -57,17 +45,7 @@ OUT_DIR = Path(r"C:/minnanosaiban/hotline/docs/blog/posts/img/09_car_event_study
 OUT_DIR.mkdir(parents=True, exist_ok=True)
 
 
-def _savefig_vpad(fig: plt.Figure, path: Path, bpad: float = 0.5) -> None:
-    """下のみ bpad インチの余白を追加して保存する（上・左右は余白なし）。"""
-    import io
-    import numpy as np
-    buf = io.BytesIO()
-    fig.savefig(buf, bbox_inches="tight", pad_inches=0, format="png")
-    buf.seek(0)
-    img = plt.imread(buf)                            # RGBA float32 (H, W, 4)
-    pad_rows = max(1, round(bpad * fig.dpi))
-    white = np.ones((pad_rows, img.shape[1], img.shape[2]), dtype=img.dtype)
-    plt.imsave(str(path), np.vstack([img, white]), dpi=fig.dpi)
+_savefig_vpad = bs.savefig_uniform   # 横幅も統一して保存（共通モジュール）
 
 
 STMTS  = Path(r"C:/stock_analysis/data/statements")
@@ -177,7 +155,7 @@ def categorize(ni: float) -> str:
 
 # ── 1) コンセプト図 ────────────────────────────────────────────────────────
 def make_concept(rdf: pd.DataFrame) -> None:
-    fig, ax = plt.subplots(figsize=(13, 6.5))
+    fig, ax = plt.subplots(figsize=(FIG_W, 6.5))
     ax.set_xlim(0, 12)
     ax.set_ylim(0, 7)
     ax.axis("off")
@@ -244,7 +222,7 @@ def make_category_car(rdf: pd.DataFrame) -> None:
             "悪決算 (純利益 -20% 以下)"]
     colors = [C_GOOD, C_NEU, C_BAD]
 
-    fig, ax = plt.subplots(figsize=(13, 6.5))
+    fig, ax = plt.subplots(figsize=(FIG_W, 6.5))
 
     data = [rdf[rdf["category"] == c]["car_20"].dropna() for c in cats]
     bp = ax.boxplot(data, patch_artist=True, widths=0.55,
@@ -282,7 +260,7 @@ def make_category_car(rdf: pd.DataFrame) -> None:
         ax.spines[sp].set_visible(False)
     ax.set_title(
         "決算カテゴリ別 CAR の分布  ―  ◆ が平均値",
-        fontsize=20, fontweight="bold", color=C_TEXT, pad=24, loc="left",
+        fontsize=20, fontweight="bold", color=C_TEXT, pad=40, loc="left",
     )
 
     fig.text(0.5, -0.02,
@@ -299,7 +277,7 @@ def make_scatter(rdf: pd.DataFrame) -> None:
               rdf["car_20"].between(-40, 40)].copy()
     corr = sub["ni_change_pct"].corr(sub["car_20"])
 
-    fig, ax = plt.subplots(figsize=(13, 7))
+    fig, ax = plt.subplots(figsize=(FIG_W, 7))
 
     # ゾーン背景
     ax.axhspan(0, 40, xmin=(20 - (-150)) / 450, xmax=1.0,
@@ -336,7 +314,7 @@ def make_scatter(rdf: pd.DataFrame) -> None:
     ax.set_ylim(-40, 40)
     ax.set_title(
         f"純利益変化率 × CAR 散布図  ―  相関 {corr:+.3f}（n={len(sub)}）",
-        fontsize=20, fontweight="bold", color=C_TEXT, pad=24, loc="left",
+        fontsize=20, fontweight="bold", color=C_TEXT, pad=40, loc="left",
     )
     ax.legend(loc="upper right", fontsize=16, frameon=False)
     ax.grid(color=C_GRID, linewidth=0.5)
@@ -348,7 +326,7 @@ def make_scatter(rdf: pd.DataFrame) -> None:
 
 # ── 4) 期間別 CAR 比較 ───────────────────────────────────────────────────
 def make_periods(rdf: pd.DataFrame) -> None:
-    fig, ax = plt.subplots(figsize=(13, 6))
+    fig, ax = plt.subplots(figsize=(FIG_W, 6))
 
     periods = [5, 10, 20, 30]
     x = np.arange(len(periods))
@@ -401,7 +379,7 @@ def make_periods(rdf: pd.DataFrame) -> None:
         ax.spines[sp].set_visible(False)
     ax.set_title(
         "集計期間別 平均 CAR  ―  全カテゴリで平均マイナス（PEAD 弱、事前織り込みの強さ）",
-        fontsize=20, fontweight="bold", color=C_TEXT, pad=24, loc="left",
+        fontsize=20, fontweight="bold", color=C_TEXT, pad=40, loc="left",
     )
     _savefig_vpad(fig, OUT_DIR / "04_periods_comparison.png")
     plt.close(fig)
@@ -413,7 +391,7 @@ def make_top_bottom(rdf: pd.DataFrame, names: dict[str, str]) -> None:
     top = sub.nlargest(5, "car_20")
     bot = sub.nsmallest(5, "car_20")
 
-    fig, (ax_l, ax_r) = plt.subplots(1, 2, figsize=(14, 6),
+    fig, (ax_l, ax_r) = plt.subplots(1, 2, figsize=(FIG_W, 6),
                                      gridspec_kw=dict(wspace=0.5))
 
     # Top
@@ -434,7 +412,7 @@ def make_top_bottom(rdf: pd.DataFrame, names: dict[str, str]) -> None:
     for sp in ("top", "right"):
         ax_l.spines[sp].set_visible(False)
     ax_l.set_title("★ CAR Top5  ―  N225 を大きくアウトパフォーム",
-                   fontsize=16, fontweight="bold", color=C_TEXT, pad=24, loc="left")
+                   fontsize=16, fontweight="bold", color=C_TEXT, pad=40, loc="left")
 
     # Bottom
     y = np.arange(len(bot))[::-1]
@@ -455,10 +433,11 @@ def make_top_bottom(rdf: pd.DataFrame, names: dict[str, str]) -> None:
     for sp in ("top", "right"):
         ax_r.spines[sp].set_visible(False)
     ax_r.set_title("⚠ CAR Bottom5  ―  N225 を大きくアンダーパフォーム",
-                   fontsize=16, fontweight="bold", color=C_TEXT, pad=24, loc="left")
+                   fontsize=16, fontweight="bold", color=C_TEXT, pad=40, loc="left")
 
     fig.suptitle("極端事例のケーススタディ  ―  CAR の振れ幅は大きい",
-                 fontsize=20, fontweight="bold", color=C_TEXT, y=1.02)
+                 fontsize=20, fontweight="bold", color=C_TEXT, y=0.98)
+    fig.subplots_adjust(top=0.72)
     _savefig_vpad(fig, OUT_DIR / "05_top_bottom_cases.png")
     plt.close(fig)
 

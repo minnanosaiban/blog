@@ -22,24 +22,12 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib as mpl
+import _blog_style as bs
 
 
 # ── デザイン設定 ────────────────────────────────────────────────────────────
-mpl.rcParams["font.family"] = ["Yu Gothic", "Meiryo", "MS Gothic", "Noto Sans JP"]
-mpl.rcParams["axes.unicode_minus"] = False
-mpl.rcParams["figure.facecolor"] = "white"
-mpl.rcParams["axes.facecolor"] = "white"
-mpl.rcParams["savefig.facecolor"] = "white"
-mpl.rcParams["savefig.bbox"] = "tight"
-mpl.rcParams["savefig.dpi"] = 144
-mpl.rcParams["savefig.pad_inches"] = 0        # left/right/top: no padding
-mpl.rcParams["axes.titlepad"] = 30
-mpl.rcParams["font.size"] = 16
-mpl.rcParams["axes.titlesize"] = 20
-mpl.rcParams["axes.labelsize"] = 16
-mpl.rcParams["xtick.labelsize"] = 16
-mpl.rcParams["ytick.labelsize"] = 16
-mpl.rcParams["legend.fontsize"] = 16
+bs.apply_rcparams()
+FIG_W = bs.FIG_W
 
 C_HEALTHY = "#5a9a72"
 C_WARN    = "#c87878"
@@ -54,17 +42,7 @@ OUT_DIR = Path(r"C:/minnanosaiban/hotline/docs/blog/posts/img/06_accrual_analysi
 OUT_DIR.mkdir(parents=True, exist_ok=True)
 
 
-def _savefig_vpad(fig: plt.Figure, path: Path, bpad: float = 0.5) -> None:
-    """下のみ bpad インチの余白を追加して保存する（上・左右は余白なし）。"""
-    import io
-    import numpy as np
-    buf = io.BytesIO()
-    fig.savefig(buf, bbox_inches="tight", pad_inches=0, format="png")
-    buf.seek(0)
-    img = plt.imread(buf)                            # RGBA float32 (H, W, 4)
-    pad_rows = max(1, round(bpad * fig.dpi))
-    white = np.ones((pad_rows, img.shape[1], img.shape[2]), dtype=img.dtype)
-    plt.imsave(str(path), np.vstack([img, white]), dpi=fig.dpi)
+_savefig_vpad = bs.savefig_uniform   # 横幅も統一して保存（共通モジュール）
 
 
 YUHO = Path(r"C:/stock_analysis/data/yuho")
@@ -120,7 +98,7 @@ def load_yuho_all() -> pd.DataFrame:
 
 # ── 1) 石油元売 3 社のアクルーアル 7 年推移 ────────────────────────────────
 def make_oil_accrual_timeline(df: pd.DataFrame) -> None:
-    fig, ax = plt.subplots(figsize=(13, 6))
+    fig, ax = plt.subplots(figsize=(FIG_W, 6))
 
     for ed, name, color in OIL_3:
         sub = df[df["edinet"] == ed].sort_values("fy")
@@ -165,7 +143,7 @@ def make_oil_accrual_timeline(df: pd.DataFrame) -> None:
     ax.set_ylabel("アクルーアル比率（純利益 − 営業CF）÷ 総資産",
                   fontsize=16, color=C_TEXT)
     ax.set_title("石油元売 3 社  ―  アクルーアル比率 7 年推移",
-                 fontsize=20, fontweight="bold", color=C_TEXT, pad=24, loc="left")
+                 fontsize=20, fontweight="bold", color=C_TEXT, pad=40, loc="left")
     ax.legend(loc="lower left", fontsize=16, frameon=False)
     ax.grid(color=C_GRID, linewidth=0.5)
     for sp in ("top", "right"):
@@ -176,9 +154,9 @@ def make_oil_accrual_timeline(df: pd.DataFrame) -> None:
 
 # ── 2) 純利益 vs 営業CF 年次対比 ─────────────────────────────────────────────
 def make_oil_ni_vs_cf(df: pd.DataFrame) -> None:
-    fig, axes = plt.subplots(1, 3, figsize=(15, 5.2),
-                             gridspec_kw=dict(wspace=0.32))
-    fig.subplots_adjust(top=0.88)
+    fig, axes = plt.subplots(1, 3, figsize=(FIG_W, 5.6),
+                             gridspec_kw=dict(wspace=0.45))
+    fig.subplots_adjust(top=0.83)
 
     for ax, (ed, name, color) in zip(axes, OIL_3):
         sub = df[df["edinet"] == ed].sort_values("fy")
@@ -193,14 +171,15 @@ def make_oil_ni_vs_cf(df: pd.DataFrame) -> None:
         ax.bar(x + bw / 2, cf, width=bw, color=C_CF, alpha=0.85,
                edgecolor="white", linewidth=0.8, label="営業CF")
 
+        # 値ラベルは縦書き（90°）にして同年の青/緑が横に重ならないようにする
         for xi, v in zip(x - bw / 2, ni):
-            ax.text(xi, v + (0.2 if v >= 0 else -0.4), f"{v:.1f}",
+            ax.text(xi, v + (0.15 if v >= 0 else -0.3), f"{v:.1f}",
                     ha="center", va="bottom" if v >= 0 else "top",
-                    fontsize=16, color=C_NI, fontweight="bold")
+                    rotation=90, fontsize=14, color=C_NI, fontweight="bold")
         for xi, v in zip(x + bw / 2, cf):
-            ax.text(xi, v + (0.2 if v >= 0 else -0.4), f"{v:.1f}",
+            ax.text(xi, v + (0.15 if v >= 0 else -0.3), f"{v:.1f}",
                     ha="center", va="bottom" if v >= 0 else "top",
-                    fontsize=16, color=C_CF, fontweight="bold")
+                    rotation=90, fontsize=14, color=C_CF, fontweight="bold")
 
         # 2022 ピーク年を強調枠
         if "2022" in sub["fy"].values:
@@ -209,11 +188,11 @@ def make_oil_ni_vs_cf(df: pd.DataFrame) -> None:
 
         ax.axhline(0, color="#444444", linewidth=0.8)
         ax.set_xticks(x)
-        ax.set_xticklabels(sub["fy"].values, fontsize=16)
+        ax.set_xticklabels([f"'{str(fy)[-2:]}" for fy in sub["fy"].values], fontsize=13)
         ax.set_ylabel("（千億円）" if ax is axes[0] else "",
                       fontsize=16, color=C_TEXT_SUB)
         ylo, yhi = ax.get_ylim()
-        ax.set_ylim(ylo, yhi * 1.28)
+        ax.set_ylim(ylo * 1.55 if ylo < 0 else ylo, yhi * 1.45)
         ax.text(0.5, 0.97, name, fontsize=16, fontweight="bold",
                 color=color, transform=ax.transAxes, ha="center", va="top")
         ax.grid(axis="y", color=C_GRID, linewidth=0.5)
@@ -229,83 +208,63 @@ def make_oil_ni_vs_cf(df: pd.DataFrame) -> None:
     plt.close(fig)
 
 
-# ── 3) 13 社の 7 年平均アクルーアル ランキング ────────────────────────────────
+# ── 3) 13 社の「健全な年」ランキング（営業CF ≧ 純利益 の年数）────────────────
 def make_13_companies_rank(df: pd.DataFrame) -> None:
-    gp = (df.dropna(subset=["accrual"])
-          .groupby(["edinet", "name"])
-          .agg(mean_accrual=("accrual", "mean"),
-               std_accrual=("accrual", "std"),
-               n_years=("accrual", "count"))
+    # EDINET 単位で集計。アクルーアル ≦ 0（営業CF ≧ 純利益）＝「健全な年」を数える。
+    d = df.dropna(subset=["accrual"]).sort_values("fy_end")
+    gp = (d.groupby("edinet")
+          .agg(n_healthy=("accrual", lambda s: int((s <= 0).sum())),
+               n_years=("accrual", "count"),
+               latest_accrual=("accrual", lambda s: s.iloc[-1]),
+               mean_accrual=("accrual", "mean"))
           .reset_index())
 
-    # 同一銘柄の name 差分を吸収（ENEOS は途中で表記が変わったため）
-    # EDINET 単位で集計し直す
-    gp = (df.dropna(subset=["accrual"])
-          .groupby("edinet")
-          .agg(mean_accrual=("accrual", "mean"),
-               std_accrual=("accrual", "std"),
-               n_years=("accrual", "count"))
-          .reset_index())
-
-    # EDINET → 銘柄名（最後の表記を採用）
-    edinet_to_name = {}
-    edinet_to_code = {}
+    # EDINET → 銘柄名（最後の表記を採用。ENEOS は途中で表記が変わるため）
+    edinet_to_name, edinet_to_code = {}, {}
     for ed, gdf in df.groupby("edinet"):
         latest = gdf.sort_values("fy_end").iloc[-1]
         edinet_to_name[ed] = latest["name"][:14]
         edinet_to_code[ed] = latest["code"]
-
     gp["name"] = gp["edinet"].map(edinet_to_name)
     gp["code"] = gp["edinet"].map(edinet_to_code)
-    gp = gp.sort_values("mean_accrual")
 
-    fig, ax = plt.subplots(figsize=(13, 7))
+    # 健全な年数が多いほど上位（同数なら平均が健全＝低い方を上に）
+    gp = gp.sort_values(["n_healthy", "mean_accrual"], ascending=[True, False])
+
+    # 記事用に数値を出力
+    print("[13社 健全な年ランキング]")
+    for _, r in gp.iloc[::-1].iterrows():
+        print(f"  {r['code']} {r['name']}: 健全 {int(r['n_healthy'])}/{int(r['n_years'])}"
+              f"  (平均 {r['mean_accrual']:+.3f}, 最新 {r['latest_accrual']:+.3f})")
+
+    fig, ax = plt.subplots(figsize=(FIG_W, 7))
     y = np.arange(len(gp))
-    colors = [C_HEALTHY if v <= -0.05 else
-              "#85c1e9" if v <= 0 else
-              "#F39C12" if v <= 0.05 else C_WARN
-              for v in gp["mean_accrual"]]
+    oil_edinets = {ed for ed, _, _ in OIL_3}
+    C_OIL, C_OTHER = "#3a7ca5", "#c8d2d8"
+    colors = [C_OIL if ed in oil_edinets else C_OTHER for ed in gp["edinet"]]
 
-    ax.barh(y, gp["mean_accrual"], color=colors, alpha=0.85,
+    ax.barh(y, gp["n_healthy"], color=colors, alpha=0.85,
             edgecolor="white", linewidth=0.8)
 
-    # 標準偏差をエラーバーで
-    ax.errorbar(gp["mean_accrual"], y,
-                xerr=gp["std_accrual"], fmt="none",
-                ecolor="#444444", alpha=0.4, capsize=3)
-
     for i, (_, r) in enumerate(gp.iterrows()):
-        label = f"{r['mean_accrual']:+.3f}  (σ {r['std_accrual']:.3f}, n={r['n_years']})"
-        ax.text(r["mean_accrual"] - 0.003, i, label,
-                va="center", ha="right",
-                fontsize=16, color=C_TEXT, fontweight="bold")
-
-    # 石油元売 3 社ハイライト
-    oil_edinets = {ed for ed, _, _ in OIL_3}
-    for i, ed in enumerate(gp["edinet"]):
-        face = "#1F4E8C" if ed in oil_edinets else None
-        if face:
-            ax.add_patch(plt.Rectangle((-0.1, i - 0.4), 0.005, 0.8,
-                                       color=face, clip_on=False, zorder=3))
+        ax.text(r["n_healthy"] + 0.12, i, f"{int(r['n_healthy'])} / {int(r['n_years'])} 年",
+                va="center", ha="left", fontsize=15, color=C_TEXT, fontweight="bold")
 
     ax.set_yticks(y)
     ax.set_yticklabels([f"{r['code']} {r['name']}"
                         for _, r in gp.iterrows()], fontsize=16)
-    ax.axvline(-0.05, color=C_HEALTHY, linestyle="--", linewidth=0.7)
-    ax.axvline(0, color="#999999", linewidth=0.7)
-    ax.axvline(0.05, color="#F39C12", linestyle="--", linewidth=0.7)
-    ax.set_xlim(-0.11, 0.04)
-    ax.set_xlabel("平均アクルーアル比率（誤差バー = 標準偏差）",
-                  fontsize=16, color=C_TEXT)
-    ax.set_title("13 社の 7 年平均アクルーアル ランキング  ―  全社が健全圏",
-                 fontsize=20, fontweight="bold", color=C_TEXT, pad=24, loc="left")
+    ax.set_xlim(0, 8.2)
+    ax.set_xticks(range(0, 8))
+    ax.set_xlabel("健全だった年数（7 年中 営業CF ≧ 純利益）", fontsize=16, color=C_TEXT)
+    ax.set_title("13 社の「健全な年」ランキング  ―  ほぼ毎年 CF が純利益を上回る",
+                 fontsize=20, fontweight="bold", color=C_TEXT, pad=50, loc="left")
     ax.grid(axis="x", color=C_GRID, linewidth=0.5)
     for sp in ("top", "right"):
         ax.spines[sp].set_visible(False)
 
     fig.text(0.05, -0.02,
-             "青棒 = 石油元売 3 社。商社・エネルギー業界は構造的に低アクルーアル（健全）",
-             fontsize=16, color=C_TEXT_SUB, style="italic")
+             "青 = 石油元売 3 社（その他は灰）。バーが長い（健全な年が多い）ほど構造的に利益の質が高い",
+             fontsize=15, color=C_TEXT_SUB, style="italic")
     _savefig_vpad(fig, OUT_DIR / "03_13_companies_rank.png")
     plt.close(fig)
 
@@ -316,7 +275,7 @@ def make_ni_cf_scatter(df: pd.DataFrame) -> None:
     sub["ni_normalized"] = sub["net_income"] / sub["total_assets"] * 100
     sub["cf_normalized"] = sub["op_cf"] / sub["total_assets"] * 100
 
-    fig, ax = plt.subplots(figsize=(13, 7.5))
+    fig, ax = plt.subplots(figsize=(FIG_W, 7.5))
 
     # 45 度線（純利益 = 営業CF）
     lo = min(sub["ni_normalized"].min(), sub["cf_normalized"].min()) * 1.05
@@ -379,7 +338,7 @@ def make_ni_cf_scatter(df: pd.DataFrame) -> None:
                   fontsize=16, color=C_TEXT)
     ax.set_title(
         "純利益 × 営業CF 散布図  ―  13 社 × 7 期 = 91 サンプル",
-        fontsize=20, fontweight="bold", color=C_TEXT, pad=24, loc="left",
+        fontsize=20, fontweight="bold", color=C_TEXT, pad=40, loc="left",
     )
     ax.legend(loc="upper left", fontsize=16, frameon=True,
               facecolor="white", edgecolor="#dddddd")
@@ -394,80 +353,76 @@ def make_ni_cf_scatter(df: pd.DataFrame) -> None:
 def make_eneos_quality(df: pd.DataFrame) -> None:
     sub = df[df["edinet"] == "E24050"].sort_values("fy").reset_index(drop=True)
 
-    fig, (ax_top, ax_bot) = plt.subplots(2, 1, figsize=(12, 7.5),
-                                          gridspec_kw=dict(height_ratios=[1.4, 1],
+    fig, (ax_top, ax_bot) = plt.subplots(2, 1, figsize=(FIG_W, 9.2),
+                                          gridspec_kw=dict(height_ratios=[1, 1.7],
                                                             hspace=0.42))
 
     x = np.arange(len(sub))
     bw = 0.35
-
-    # 上段: 純利益 vs 営業CF
-    ni = sub["net_income"] / 1e11
-    cf = sub["op_cf"] / 1e11
-    ax_top.bar(x - bw / 2, ni, width=bw, color=C_NI, alpha=0.85,
-               edgecolor="white", linewidth=0.8, label="純利益")
-    ax_top.bar(x + bw / 2, cf, width=bw, color=C_CF, alpha=0.85,
-               edgecolor="white", linewidth=0.8, label="営業CF")
-    for xi, v in zip(x - bw / 2, ni):
-        ax_top.text(xi, v + (0.2 if v >= 0 else -0.4), f"{v:.1f}",
-                    ha="center", va="bottom" if v >= 0 else "top",
-                    fontsize=16, color=C_NI, fontweight="bold")
-    for xi, v in zip(x + bw / 2, cf):
-        ax_top.text(xi, v + (0.2 if v >= 0 else -0.4), f"{v:.1f}",
-                    ha="center", va="bottom" if v >= 0 else "top",
-                    fontsize=16, color=C_CF, fontweight="bold")
-
-    # 2022 ピーク年を強調
     i22 = list(sub["fy"]).index("2022")
-    ax_top.axvspan(i22 - 0.55, i22 + 0.55, facecolor="#c87878", alpha=0.08)
-    ax_top.annotate(
-        "2022 ピーク年\n純利益 5,371 億円のうち\nCF 化は 2,095 億円 (39%)",
-        xy=(i22, ni.iloc[i22]),
-        xytext=(i22 - 1.8, 8.9), textcoords="data",
-        fontsize=16, fontweight="bold", color="#c87878", ha="center",
-        arrowprops=dict(arrowstyle="->", color="#c87878", lw=1.5),
-        bbox=dict(facecolor="white", edgecolor="#c87878", boxstyle="round,pad=0.3"),
-    )
 
+    # ── 上段: アクルーアル比率（比率は折れ線で統一・2022 を赤で警戒表示） ──
+    accr = sub["accrual"].values
+    pt_colors = [C_WARN if (pd.notna(v) and v > 0) else C_HEALTHY for v in accr]
+    ax_top.plot(x, accr, color="#999999", linewidth=2, zorder=2)
+    ax_top.scatter(x, accr, c=pt_colors, s=90, zorder=3,
+                   edgecolors="white", linewidths=1.2)
+    for xi, v in zip(x, accr):
+        if pd.notna(v):
+            ax_top.text(xi, v + (0.006 if v >= 0 else -0.007),
+                        f"{v:+.3f}", ha="center",
+                        va="bottom" if v >= 0 else "top",
+                        fontsize=14, color=C_TEXT, fontweight="bold")
     ax_top.axhline(0, color="#444444", linewidth=0.8)
+    ax_top.axhline(-0.05, color=C_HEALTHY, linestyle="--", linewidth=0.7, alpha=0.7)
+    ax_top.axhline(0.05, color="#F39C12", linestyle="--", linewidth=0.7, alpha=0.7)
+    ax_top.annotate("2022 でプラス転換\n（純利益 > CF ＝ 警戒）",
+                    xy=(i22, accr[i22]), xytext=(i22 - 1.7, 0.062),
+                    fontsize=14, fontweight="bold", color=C_WARN, ha="center",
+                    arrowprops=dict(arrowstyle="->", color=C_WARN, lw=1.5),
+                    bbox=dict(facecolor="white", edgecolor=C_WARN, boxstyle="round,pad=0.3"))
     ax_top.set_xticks(x)
-    ax_top.set_xticklabels([])  # 年ラベルは下段に集約（下段タイトルとの重なり防止）
-    ax_top.set_ylim(-3, 12.8)   # 上部に余白を作り凡例と注釈を縦に離す
-    ax_top.set_ylabel("純利益・営業CF（千億円）",
-                      fontsize=16, color=C_TEXT)
+    ax_top.set_xticklabels([])
+    ax_top.set_ylim(-0.11, 0.092)
+    ax_top.set_ylabel("アクルーアル比率", fontsize=16, color=C_TEXT)
     ax_top.set_title("ＥＮＥＯＳ  ―  2022 ピーク利益はキャッシュで裏付けられていなかった",
-                     fontsize=20, fontweight="bold", color=C_TEXT, pad=24, loc="left")
-    ax_top.legend(loc="upper right", fontsize=16, frameon=False)
+                     fontsize=20, fontweight="bold", color=C_TEXT, pad=40, loc="left")
     ax_top.grid(axis="y", color=C_GRID, linewidth=0.5)
     for sp in ("top", "right"):
         ax_top.spines[sp].set_visible(False)
 
-    # 下段: アクルーアル比率
-    accr = sub["accrual"].values
-    colors_bar = [C_WARN if v > 0.02 else
-                  "#F39C12" if v > 0 else
-                  C_HEALTHY if v < -0.05 else "#85c1e9"
-                  for v in accr]
-    ax_bot.bar(x, accr, color=colors_bar, alpha=0.85,
-               edgecolor="white", linewidth=0.8)
-    for xi, v in zip(x, accr):
-        if pd.notna(v):
-            ax_bot.text(xi, v + (0.003 if v >= 0 else -0.004),
-                        f"{v:+.3f}", ha="center",
-                        va="bottom" if v >= 0 else "top",
-                        fontsize=16, color=C_TEXT, fontweight="bold")
-
+    # ── 下段: 純利益 vs 営業CF（金額は棒で統一） ──
+    ni = sub["net_income"] / 1e11
+    cf = sub["op_cf"] / 1e11
+    ax_bot.bar(x - bw / 2, ni, width=bw, color=C_NI, alpha=0.85,
+               edgecolor="white", linewidth=0.8, label="純利益")
+    ax_bot.bar(x + bw / 2, cf, width=bw, color=C_CF, alpha=0.85,
+               edgecolor="white", linewidth=0.8, label="営業CF")
+    for xi, v in zip(x - bw / 2, ni):
+        ax_bot.text(xi, v + (0.2 if v >= 0 else -0.4), f"{v:.1f}",
+                    ha="center", va="bottom" if v >= 0 else "top",
+                    fontsize=15, color=C_NI, fontweight="bold")
+    for xi, v in zip(x + bw / 2, cf):
+        ax_bot.text(xi, v + (0.2 if v >= 0 else -0.4), f"{v:.1f}",
+                    ha="center", va="bottom" if v >= 0 else "top",
+                    fontsize=15, color=C_CF, fontweight="bold")
+    ax_bot.axvspan(i22 - 0.55, i22 + 0.55, facecolor="#c87878", alpha=0.08)
+    ax_bot.annotate(
+        "2022 ピーク年\n純利益 5,371 億円のうち\nCF 化は 2,095 億円 (39%)",
+        xy=(i22, ni.iloc[i22]),
+        xytext=(i22 - 1.9, 8.9), textcoords="data",
+        fontsize=15, fontweight="bold", color="#c87878", ha="center",
+        arrowprops=dict(arrowstyle="->", color="#c87878", lw=1.5),
+        bbox=dict(facecolor="white", edgecolor="#c87878", boxstyle="round,pad=0.3"),
+    )
     ax_bot.axhline(0, color="#444444", linewidth=0.8)
-    ax_bot.axhline(-0.05, color=C_HEALTHY, linestyle="--",
-                   linewidth=0.7, alpha=0.7)
-    ax_bot.axhline(0.05, color="#F39C12", linestyle="--",
-                   linewidth=0.7, alpha=0.7)
     ax_bot.set_xticks(x)
-    ax_bot.set_xticklabels(sub["fy"].values, fontsize=16)
-    ax_bot.set_ylim(-0.11, 0.075)  # データラベルの余白を確保
-    ax_bot.set_ylabel("アクルーアル比率", fontsize=16, color=C_TEXT)
-    ax_bot.set_title("同年のアクルーアル比率（プラス = 純利益が CF を超過 = 警戒寄り）",
-                     fontsize=16, fontweight="bold", color=C_TEXT, pad=24, loc="left")
+    ax_bot.set_xticklabels(sub["fy"].values, fontsize=14)
+    ax_bot.set_ylim(-3, 12.8)
+    ax_bot.set_ylabel("純利益・営業CF（千億円）", fontsize=16, color=C_TEXT)
+    ax_bot.set_title("純利益 vs 営業CF（同年の金額対比）",
+                     fontsize=16, fontweight="bold", color=C_TEXT, pad=40, loc="left")
+    ax_bot.legend(loc="upper right", fontsize=16, frameon=False)
     ax_bot.grid(axis="y", color=C_GRID, linewidth=0.5)
     for sp in ("top", "right"):
         ax_bot.spines[sp].set_visible(False)

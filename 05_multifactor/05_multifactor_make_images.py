@@ -21,6 +21,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib as mpl
+import _blog_style as bs
 from matplotlib.patches import Rectangle
 
 from config.paths import rakunav_file, PRICES_STOCKS_DAILY
@@ -30,21 +31,8 @@ from utils.master_names import apply_master_names, load_price_targets_names
 
 
 # ── デザイン設定 ────────────────────────────────────────────────────────────
-mpl.rcParams["font.family"] = ["Yu Gothic", "Meiryo", "MS Gothic", "Noto Sans JP"]
-mpl.rcParams["axes.unicode_minus"] = False
-mpl.rcParams["figure.facecolor"] = "white"
-mpl.rcParams["axes.facecolor"] = "white"
-mpl.rcParams["savefig.facecolor"] = "white"
-mpl.rcParams["savefig.bbox"] = "tight"
-mpl.rcParams["savefig.dpi"] = 144
-mpl.rcParams["savefig.pad_inches"] = 0        # left/right/top: no padding
-mpl.rcParams["axes.titlepad"] = 30
-mpl.rcParams["font.size"] = 16
-mpl.rcParams["axes.titlesize"] = 20
-mpl.rcParams["axes.labelsize"] = 16
-mpl.rcParams["xtick.labelsize"] = 16
-mpl.rcParams["ytick.labelsize"] = 16
-mpl.rcParams["legend.fontsize"] = 16
+bs.apply_rcparams()
+FIG_W = bs.FIG_W
 
 FACTOR_COLORS = {
     "Value":     "#4C8BF5",
@@ -64,20 +52,7 @@ OUT_DIR = Path(r"C:/minnanosaiban/hotline/docs/blog/posts/img/05_multifactor_sco
 OUT_DIR.mkdir(parents=True, exist_ok=True)
 
 
-def _savefig_vpad(fig: plt.Figure, path: Path,
-                  tpad: float = 0.4, bpad: float = 0.5) -> None:
-    """上 tpad / 下 bpad インチの余白を追加して保存する（左右は余白なし）。"""
-    import io
-    import numpy as np
-    buf = io.BytesIO()
-    fig.savefig(buf, bbox_inches="tight", pad_inches=0, format="png")
-    buf.seek(0)
-    img = plt.imread(buf)                            # RGBA float32 (H, W, 4)
-    top_rows = max(1, round(tpad * fig.dpi))
-    bot_rows = max(1, round(bpad * fig.dpi))
-    white_top = np.ones((top_rows, img.shape[1], img.shape[2]), dtype=img.dtype)
-    white_bot = np.ones((bot_rows, img.shape[1], img.shape[2]), dtype=img.dtype)
-    plt.imsave(str(path), np.vstack([white_top, img, white_bot]), dpi=fig.dpi)
+_savefig_vpad = bs.savefig_uniform   # 横幅も統一して保存（共通モジュール）
 
 
 # ── データ準備 ─────────────────────────────────────────────────────────────
@@ -212,7 +187,7 @@ def make_scoreboard_top20(df: pd.DataFrame) -> None:
     top.index += 1
     cols = ["score_総合"] + [f"score_{f}" for f in FACTORS]
 
-    fig, ax = plt.subplots(figsize=(13, 7.9))
+    fig, ax = plt.subplots(figsize=(FIG_W, 7.9))
     ax.set_xlim(-0.5, 5.5 + len(cols) - 0.3)
     ax.set_ylim(len(top) + 1, -1)
 
@@ -249,7 +224,7 @@ def make_scoreboard_top20(df: pd.DataFrame) -> None:
     for spine in ("top", "right", "left", "bottom"):
         ax.spines[spine].set_visible(False)
     ax.set_title("総合スコア Top 20  ―  TOPIX 大型 100 銘柄 × 7 ファクター ヒートマップ",
-                 fontsize=18, fontweight="bold", color=C_TEXT, pad=22, loc="left")
+                 fontsize=18, fontweight="bold", color=C_TEXT, pad=38, loc="left")
 
     _savefig_vpad(fig, OUT_DIR / "01_scoreboard_top20.png")
     plt.close(fig)
@@ -257,7 +232,7 @@ def make_scoreboard_top20(df: pd.DataFrame) -> None:
 
 # ── 2) ファクタースコア分布 ─────────────────────────────────────────────────
 def make_factor_distribution(df: pd.DataFrame) -> None:
-    fig, axes = plt.subplots(2, 4, figsize=(13, 5.8))
+    fig, axes = plt.subplots(2, 4, figsize=(FIG_W, 5.8))
     axes = axes.flatten()
     # 低/中/高スコア帯ごとの色（落ち着いたトーン）
     ZONE_LOW    = "#c98686"  # 0-30   ダスティローズ（不調）
@@ -297,7 +272,7 @@ def make_factor_distribution(df: pd.DataFrame) -> None:
 
     fig.suptitle(f"7 ファクター スコア分布（対象 {len(df):,} 銘柄）",
                  fontsize=18, fontweight="bold", color=C_TEXT, y=0.98)
-    plt.tight_layout(rect=[0, 0, 1, 0.94])
+    plt.tight_layout(rect=[0, 0, 1, 0.95])
 
     _savefig_vpad(fig, OUT_DIR / "02_factor_distribution.png")
     plt.close(fig)
@@ -305,7 +280,7 @@ def make_factor_distribution(df: pd.DataFrame) -> None:
 
 # ── 3) Value × Quality 散布図 ─────────────────────────────────────────────
 def make_value_quality_scatter(df: pd.DataFrame) -> None:
-    fig, ax = plt.subplots(figsize=(13, 9.0))
+    fig, ax = plt.subplots(figsize=(FIG_W, 9.0))
 
     # 4 象限の薄塗り
     ax.axhspan(70, 100, xmin=0.7, xmax=1.0, facecolor="#5a9a72", alpha=0.08)  # 右上 ★Buffett
@@ -354,7 +329,7 @@ def make_value_quality_scatter(df: pd.DataFrame) -> None:
     ax.set_xlabel("Value スコア  ← 割高     割安 →", fontsize=16, color=C_TEXT)
     ax.set_ylabel("Quality スコア  ← 低品質    高品質 →", fontsize=16, color=C_TEXT)
     ax.set_title("Value × Quality 散布図  ―  4 ゾーンと主要銘柄の位置",
-                 fontsize=18, fontweight="bold", color=C_TEXT, pad=22, loc="left")
+                 fontsize=18, fontweight="bold", color=C_TEXT, pad=38, loc="left")
     ax.grid(color=C_GRID, linewidth=0.5)
     for sp in ("top", "right"):
         ax.spines[sp].set_visible(False)
@@ -369,7 +344,7 @@ def make_majors_radar(df: pd.DataFrame) -> None:
     n_majors = len(MAJORS)
     n_cols = 3
     n_rows = (n_majors + n_cols - 1) // n_cols
-    fig, axes = plt.subplots(n_rows, n_cols, figsize=(13, 4.8 * n_rows),
+    fig, axes = plt.subplots(n_rows, n_cols, figsize=(FIG_W, 4.8 * n_rows),
                              subplot_kw=dict(projection="polar"))
     axes = axes.flatten() if n_majors > 1 else [axes]
 
@@ -404,14 +379,14 @@ def make_majors_radar(df: pd.DataFrame) -> None:
         total = r["score_総合"]
         label = r["銘柄名"]
         ax.set_title(f"{label}（総合 {total:.0f}）",
-                     fontsize=16, fontweight="bold", color=C_TEXT, pad=22)
+                     fontsize=16, fontweight="bold", color=C_TEXT, pad=38)
 
     for ax in axes[n_majors:]:
         ax.axis("off")
 
     fig.suptitle("主要 6 社の 7 ファクターレーダー",
                  fontsize=18, fontweight="bold", color=C_TEXT, y=0.98)
-    plt.tight_layout(rect=[0, 0, 1, 0.94])
+    plt.tight_layout(rect=[0, 0, 1, 0.89])
     plt.subplots_adjust(hspace=0.55)
 
     _savefig_vpad(fig, OUT_DIR / "04_majors_radar.png")
@@ -421,7 +396,7 @@ def make_majors_radar(df: pd.DataFrame) -> None:
 # ── 5) 石油元売 3 社のセクター内比較 ────────────────────────────────────────
 def make_oil_refining_compare(df: pd.DataFrame) -> None:
     """連載01 と同じ 3 社を 7 ファクター・レーダーで可視化。"""
-    fig = plt.figure(figsize=(13, 5.6))
+    fig = plt.figure(figsize=(FIG_W, 5.6))
     gs = fig.add_gridspec(1, 3, width_ratios=[1, 1, 1], wspace=0.35)
 
     angles = np.linspace(0, 2 * np.pi, len(FACTORS), endpoint=False).tolist()
@@ -451,11 +426,11 @@ def make_oil_refining_compare(df: pd.DataFrame) -> None:
         ax.set_xticks(angles)
         ax.set_xticklabels(FACTORS, fontsize=16, color=C_TEXT)
         ax.set_title(f"{label}\n（総合 {r['score_総合']:.0f}）",
-                     fontsize=16, fontweight="bold", color=C_TEXT, pad=20)
+                     fontsize=16, fontweight="bold", color=C_TEXT, pad=36)
 
     fig.suptitle("石油元売 3 社の 7 ファクター比較  ―  セクター内マルチファクター分析",
                  fontsize=18, fontweight="bold", color=C_TEXT, y=0.98)
-    fig.subplots_adjust(top=0.88)
+    fig.subplots_adjust(top=0.83)
 
     _savefig_vpad(fig, OUT_DIR / "05_oil_refining_factors.png")
     plt.close(fig)
