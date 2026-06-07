@@ -115,52 +115,90 @@ def load_triangulation() -> pd.DataFrame:
     return m
 
 
-# ── 1) 予想検証の概念図 ────────────────────────────────────────────────────
+# ── 1) 予想検証の概念図（パイプライン型・サムネイルと同レイアウト） ────────────
 def make_concept() -> None:
-    fig, ax = plt.subplots(figsize=(FIG_W, 8))
-    ax.set_xlim(0, 12)
-    ax.set_ylim(0, 9.6)
+    """3 入力（業績・ガイダンス・コンセンサス）→ 予想検証（3 乖離を算出）→ 2 判定。
+
+    サムネイル（00）と同じボックス・フロー語彙を、本文の白背景チャート用に精緻化。
+    中央の検証ボックスに GA / CG / CA の 3 乖離を明示し、右の判定には成立条件を添える。
+    """
+    C_SRC_ACT  = "#4a9a6a"  # 業績（確定＝緑系）
+    C_SRC_GUI  = "#3d7fb5"  # ガイダンス（会社＝青系）
+    C_SRC_CONS = "#2a9d8f"  # コンセンサス（アナリスト＝ティール系）
+
+    fig, ax = plt.subplots(figsize=(FIG_W, 8.2))
+    ax.set_xlim(0, 100)
+    ax.set_ylim(0, 100)
     ax.axis("off")
 
-    # 3 頂点（業績=頂点・ガイダンス=左下・コンセンサス=右下：サムネイルと同配置）
-    nodes = {
-        "actual":    (6.0, 7.3, C_ACT,  "業績", "会社の確定業績"),
-        "guidance":  (2.3, 2.2, C_GUI,  "ガイダンス", "会社の来期予想"),
-        "consensus": (9.7, 2.2, C_CONS, "コンセンサス", "アナリスト平均予想"),
-    }
-    for key, (x, y, color, label, sub) in nodes.items():
-        ax.add_patch(FancyBboxPatch((x - 1.7, y - 0.7), 3.4, 1.4,
-                                    boxstyle="round,pad=0.08",
-                                    linewidth=2.4, edgecolor=color,
-                                    facecolor="white"))
-        ax.text(x, y + 0.18, label, ha="center", va="center",
-                fontsize=19, fontweight="bold", color=color)
-        ax.text(x, y - 0.42, sub, ha="center", va="center",
-                fontsize=14, color=C_TEXT_SUB)
+    def fbox(cx, cy, w, h, color, lines, header_fs, body_fs, step):
+        ax.add_patch(FancyBboxPatch((cx - w / 2, cy - h / 2), w, h,
+                                    boxstyle="round,pad=0.4",
+                                    linewidth=2.2, edgecolor=color,
+                                    facecolor="white", mutation_aspect=0.5))
+        # 先頭行をヘッダ（太字・色）、以降をサブ（淡色）。cy を中心に等間隔で対称配置
+        n = len(lines)
+        y0 = cy + (n - 1) * step / 2
+        for i, (txt, is_head) in enumerate(lines):
+            ax.text(cx, y0 - i * step, txt, ha="center", va="center",
+                    fontsize=header_fs if is_head else body_fs,
+                    fontweight="bold" if is_head else "normal",
+                    color=color if is_head else C_TEXT_SUB)
 
-    a, g, c = nodes["actual"], nodes["guidance"], nodes["consensus"]
-    # 3 辺（ペア比較）
-    edges = [
-        (a, g, "ガイダンス − 業績\n＋ 強気 / − 保守", -1.0),
-        (a, c, "コンセンサス − 業績\n来期の成長期待", 1.0),
-        (g, c, "コンセンサス − ガイダンス\n＋ アナリスト強気", 0.0),
-    ]
-    for n1, n2, label, dx in edges:
-        ax.add_patch(FancyArrowPatch((n1[0], n1[1]), (n2[0], n2[1]),
-                     arrowstyle="<->", mutation_scale=20,
-                     color="#bbbbbb", linewidth=1.6, shrinkA=46, shrinkB=46))
-        mx, my = (n1[0] + n2[0]) / 2 + dx, (n1[1] + n2[1]) / 2
-        ax.text(mx, my, label, fontsize=15, ha="center", va="center",
-                color="#444444", fontweight="bold",
-                bbox=dict(facecolor="white", edgecolor="#cccccc",
-                          boxstyle="round,pad=0.3"))
+    # ── 左: 3 入力 ─────────────────────────────────────────────
+    fbox(12, 72, 22, 20, C_SRC_ACT,
+         [("業績", True), ("決算で確定", False)], 20, 15, 7)
+    fbox(12, 44, 22, 20, C_SRC_GUI,
+         [("企業ガイダンス", True), ("会社の来期予想", False)], 18, 14, 7)
+    fbox(12, 16, 22, 20, C_SRC_CONS,
+         [("コンセンサス", True), ("アナリスト平均", False)], 19, 14, 7)
 
-    ax.text(6.0, 8.9, "予想検証  ―  3 ソースを三角形で比較",
-            fontsize=20, fontweight="bold", color=C_TEXT, ha="center", va="center")
-    ax.text(6.0, 0.5,
-            "保守ガイダンス × アナリスト強気 → 上方修正期待大\n"
-            "強気ガイダンス × アナリスト懐疑 → 達成困難",
-            fontsize=15, ha="center", va="center", color=C_TEXT_SUB, style="italic")
+    # ── 中央: 予想検証（3 乖離を算出）────────────────────────────
+    cx_v, w_v = 45, 35
+    ax.add_patch(FancyBboxPatch((cx_v - w_v / 2, 44 - 68 / 2), w_v, 68,
+                                boxstyle="round,pad=0.4",
+                                linewidth=2.4, edgecolor=C_TEXT,
+                                facecolor="#f7f9fb", mutation_aspect=0.6))
+    ax.text(cx_v, 70, "予想 × 実績", ha="center", va="center",
+            fontsize=22, fontweight="bold", color=C_TEXT)
+    ax.plot([cx_v - 14, cx_v + 14], [63, 63], color="#d4d9de", linewidth=1)
+    for yy, tag, formula, col in [
+        (55, "GA", "ガイダンス − 業績", C_SRC_GUI),
+        (46, "CG", "コンセンサス − ガイダンス", C_SRC_CONS),
+        (37, "CA", "コンセンサス − 業績", "#7a7f85"),
+    ]:
+        ax.text(cx_v - 16, yy, tag, ha="left", va="center",
+                fontsize=16, fontweight="bold", color=col)
+        ax.text(cx_v - 10, yy, formula, ha="left", va="center",
+                fontsize=14, color=C_TEXT)
+    ax.text(cx_v, 26, "どれか 1 つが“浮く”", ha="center", va="center",
+            fontsize=15, fontweight="bold", color=C_TEXT_SUB, style="italic")
+
+    # ── 右: 2 判定（右端をゾーン端から離し、clip による切れを防ぐ）──────────
+    fbox(82, 62, 27, 24, C_UP,
+         [("★ 上方修正期待", True),
+          ("保守ガイダンス × 強気", False),
+          ("GA < 0 ・ CG > 0", False)], 18, 14, 7.5)
+    fbox(82, 26, 27, 24, C_WARN,
+         [("⚠ 達成困難", True),
+          ("強気ガイダンス × 懐疑", False),
+          ("GA > 0 ・ CG < 0", False)], 18, 14, 7.5)
+
+    # ── 矢印 ───────────────────────────────────────────────────
+    arr = dict(arrowstyle="-|>", color="#9aa0a6", lw=2.0,
+               shrinkA=0, shrinkB=0, mutation_scale=20)
+    for y0, y1 in [(72, 56), (44, 44), (16, 32)]:
+        ax.add_patch(FancyArrowPatch((23.5, y0), (27, y1), **arr))
+    ax.add_patch(FancyArrowPatch((63, 52), (67.5, 62), **arr))
+    ax.add_patch(FancyArrowPatch((63, 36), (67.5, 26), **arr))
+
+    # ── タイトル（図との間に約 2 行分の余白）& 脚注 ──────────────────
+    ax.text(50, 93, "3 ソースを照合し、将来の業績修正の向きを読む",
+            fontsize=23, fontweight="bold", color=C_TEXT, ha="center", va="center")
+    ax.text(50, 3.5,
+            "※ ★の中身は CA で振り分け ―  コンセンサス ≒ 業績 = 出し惜しみ（本物）／"
+            "コンセンサス ≫ 業績 = 楽観（注意）",
+            fontsize=13.5, ha="center", va="center", color=C_TEXT_SUB)
 
     _savefig_vpad(fig, OUT_DIR / "01_triangulation_concept.png")
     plt.close(fig)

@@ -48,28 +48,28 @@ def _arrow(ax, x1, y1, x2, y2, color="#444"):
 
 
 def image_01_pipeline():
-    fig, ax = plt.subplots(figsize=(FIG_W, 5))
-    ax.set_xlim(0, 13); ax.set_ylim(0, 5); ax.axis("off")
+    fig, ax = plt.subplots(figsize=(FIG_W, 5.4))
+    ax.set_xlim(0, 13); ax.set_ylim(0, 5.4); ax.axis("off")
     steps = [
-        (0.3, 2, 2.2, 1.0, "1. 決算 JSON\n（連載08\nスキーマ）", "#6FA8D6"),
-        (2.9, 2, 2.2, 1.0, "2. 特徴量\n抽出\n（10 次元）", "#2E86AB"),
-        (5.5, 2, 2.2, 1.0, "3. z-score\n正規化", "#E26A2C"),
-        (8.1, 2, 2.2, 1.0, "4. cosine\n類似度", "#A23B72"),
-        (10.7, 2, 2.0, 1.0, "5. Top-K\n類似決算", "#48A14D"),
+        (0.3, 1.7, 2.2, 1.6, "1. 決算 JSON\n（連載08\nスキーマ）", "#6FA8D6"),
+        (2.9, 1.7, 2.2, 1.6, "2. 特徴量\n抽出\n（10 次元）", "#2E86AB"),
+        (5.5, 1.7, 2.2, 1.6, "3. z-score\n正規化", "#E26A2C"),
+        (8.1, 1.7, 2.2, 1.6, "4. cosine\n類似度", "#A23B72"),
+        (10.7, 1.7, 2.0, 1.6, "5. Top-K\n類似決算", "#48A14D"),
     ]
     for x, y, w, h, t, c in steps:
-        _box(ax, x, y, w, h, t, color=c, fontsize=11)
+        _box(ax, x, y, w, h, t, color=c, fontsize=20)
     for i in range(len(steps) - 1):
         x1 = steps[i][0] + steps[i][2]
         x2 = steps[i + 1][0]
         _arrow(ax, x1, 2.5, x2, 2.5)
 
-    ax.text(6.5, 4.3, "連載15: 数値特徴量ベクトル + コサイン類似度で「似た決算」を発見",
-            ha="center", fontsize=14, weight="bold")
-    ax.text(6.5, 0.7, "embedding API 不要・ローカル計算で完結。連載13 CAR と join すれば「過去類似決算の値動き」が分かる",
-            ha="center", fontsize=11, color="#555", style="italic")
-    ax.text(6.5, 0.2, "次回連載16 は本ロジックで「未来の値動き予測」フレームを構築",
-            ha="center", fontsize=10, color="#666")
+    ax.text(6.5, 4.75, "連載15: 数値特徴量ベクトル + コサイン類似度で「似た決算」を発見",
+            ha="center", fontsize=24, weight="bold")
+    ax.text(6.5, 0.85, "embedding API 不要・ローカル計算で完結。連載13 CAR と join すれば「過去類似決算の値動き」が分かる",
+            ha="center", fontsize=18, color="#555", style="italic")
+    ax.text(6.5, 0.30, "次回連載16 は本ロジックで「未来の値動き予測」フレームを構築",
+            ha="center", fontsize=16, color="#666")
     fig.tight_layout()
     bs.savefig_uniform(fig, OUT_DIR / "01_pipeline.png")
     plt.close(fig)

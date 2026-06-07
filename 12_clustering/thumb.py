@@ -26,10 +26,10 @@ ax_l.set_ylim(0, 1)
 
 ax_l.add_patch(patches.Rectangle((0.07, 0.875), 0.018, 0.055, facecolor=BLUE_L, linewidth=0))
 ax_l.text(0.110, 0.902, '連載 3-3', color=BLUE_L, fontsize=24, va='center', ha='left', fontweight='bold')
-ax_l.text(0.07, 0.69, '決算の型', color=WHITE, fontsize=60, va='center', ha='left', fontweight='bold')
+ax_l.text(0.07, 0.69, 'K-means', color=WHITE, fontsize=60, va='center', ha='left', fontweight='bold')
 ax_l.add_patch(patches.Rectangle((0.07, 0.578), 0.85, 0.004, facecolor=BLUE_L, linewidth=0, alpha=0.6))
-ax_l.text(0.07, 0.48, '教師なし学習で', color=BLUE_L, fontsize=36, va='center', ha='left', fontweight='bold')
-ax_l.text(0.07, 0.37, '3 タイプに分類', color=WHITE, fontsize=36, va='center', ha='left', fontweight='bold')
+ax_l.text(0.07, 0.48, '教師なし学習が分けた', color=BLUE_L, fontsize=36, va='center', ha='left', fontweight='bold')
+ax_l.text(0.07, 0.37, '「決算の型」', color=WHITE, fontsize=36, va='center', ha='left', fontweight='bold')
 
 ax_r = fig.add_axes([0.46, 0.08, 0.50, 0.84], facecolor=BG)
 ax_r.set_xlim(0, 100)
