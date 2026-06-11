@@ -32,8 +32,8 @@ ax_l.text(0.66, 0.69, '/TDnet', color=SOFT, fontsize=36, va='center', ha='left',
 ax_l.set_xlim(0, 1)
 ax_l.set_ylim(0, 1)
 ax_l.add_patch(patches.Rectangle((0.07, 0.578), 0.85, 0.004, facecolor=BLUE_L, linewidth=0, alpha=0.6))
-ax_l.text(0.07, 0.48, '株価以外のデータを', color=BLUE_L, fontsize=33, va='center', ha='left', fontweight='bold')
-ax_l.text(0.07, 0.37, '3 ソースから集める', color=WHITE, fontsize=33, va='center', ha='left', fontweight='bold')
+ax_l.text(0.07, 0.48, '株価以外のデータを', color=BLUE_L, fontsize=36, va='center', ha='left', fontweight='bold')
+ax_l.text(0.07, 0.37, '3 ソースから集める', color=WHITE, fontsize=36, va='center', ha='left', fontweight='bold')
 
 ax_r = fig.add_axes([0.46, 0.06, 0.50, 0.80], facecolor=BG)
 ax_r.set_xlim(0, 100)

@@ -301,10 +301,10 @@ def make_upside_top10(m: pd.DataFrame) -> None:
 
     ax.barh(y - bw / 2, top["guide_vs_actual_pct"], height=bw,
             color="#85c1e9", alpha=0.85, edgecolor="white", linewidth=0.8,
-            label="ガイダンス − 業績（左軸）")
+            label="ガイダンス − 業績")
     ax.barh(y + bw / 2, top["consensus_vs_guide_pct"], height=bw,
             color=C_UP, alpha=0.85, edgecolor="white", linewidth=0.8,
-            label="コンセンサス − ガイダンス（右軸）")
+            label="コンセンサス − ガイダンス")
 
     for i, (_, r) in enumerate(top.iterrows()):
         ax.text(r["guide_vs_actual_pct"] - 2, i - bw / 2,
@@ -322,8 +322,12 @@ def make_upside_top10(m: pd.DataFrame) -> None:
     ax.axvline(0, color="#444444", linewidth=0.8)
     ax.set_xlabel("乖離率（%）",
                   fontsize=16, color=C_TEXT_SUB)
-    ax.set_xlim(top["guide_vs_actual_pct"].min() * 1.15,
-                top["consensus_vs_guide_pct"].max() * 1.15)
+    # 値ラベルはバー先端の外側に置くため、ラベル分の余白を左右に確保する
+    # （余白が無いとラベルが軸外へはみ出し、y軸の銘柄名と重なる）
+    lo = top["guide_vs_actual_pct"].min()
+    hi = top["consensus_vs_guide_pct"].max()
+    rng = hi - lo
+    ax.set_xlim(lo - 0.16 * rng, hi + 0.10 * rng)
     ax.legend(loc="lower right", fontsize=16, frameon=False)
     ax.grid(axis="x", color=C_GRID, linewidth=0.5)
     for sp in ("top", "right"):
@@ -369,6 +373,11 @@ def make_downside_top10(m: pd.DataFrame) -> None:
     ax.axvline(0, color="#444444", linewidth=0.8)
     ax.set_xlabel("乖離率（%）",
                   fontsize=16, color=C_TEXT_SUB)
+    # 値ラベルがバー先端の外側に出るため、ラベル分の余白を左右に確保する
+    lo = top["consensus_vs_guide_pct"].min()
+    hi = top["guide_vs_actual_pct"].max()
+    rng = hi - lo
+    ax.set_xlim(lo - 0.16 * rng, hi + 0.10 * rng)
     ax.legend(loc="upper right", fontsize=16, frameon=False)
     ax.grid(axis="x", color=C_GRID, linewidth=0.5)
     for sp in ("top", "right"):
@@ -456,9 +465,11 @@ def make_trading_companies(m: pd.DataFrame) -> None:
     ax_l.set_xlabel("乖離率（%）　　← 保守 / 懐疑　　　強気 →",
                     fontsize=18, color=C_TEXT)
     ax_l.tick_params(axis="x", labelsize=17)
-    ax_l.legend(loc="center right", bbox_to_anchor=(0.995, 0.27),
-                fontsize=14, frameon=True,
-                facecolor="white", edgecolor="#dddddd")
+    # 軸内に置くと伊藤忠・丸紅行のバー／値ラベルを覆うため、
+    # サブタイトル（fig.text y=0.900）と軸上端（top=0.67）の間の帯に出す
+    handles_l, labels_l = ax_l.get_legend_handles_labels()
+    fig.legend(handles_l, labels_l, loc="center", bbox_to_anchor=(0.5, 0.80),
+               ncols=2, fontsize=14, frameon=False)
     ax_l.grid(axis="x", color=C_GRID, linewidth=0.6)
     for sp in ("top", "right"):
         ax_l.spines[sp].set_visible(False)

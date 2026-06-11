@@ -145,12 +145,18 @@ def image_03_top15_table():
 
     cols = ["順位", "コード", "会社名", "類似度", "売上YoY", "純利YoY", "配当成長",
             "CAR[-1,+1]", "CAR[-1,+5]"]
+
+    def _name(s: str) -> str:
+        """法人格を落として列幅に収める（長い社名がセル罫線を跨ぐのを防ぐ）。"""
+        s = str(s).replace("株式会社", "").strip()
+        return s if len(s) <= 14 else s[:13] + "…"
+
     rows = []
     for i, r in df.iterrows():
         rows.append([
             str(i + 1),
             str(r["code"]),
-            str(r["company"])[:14],
+            _name(r["company"]),
             f"{r['similarity']:.3f}",
             f"{r['net_sales_yoy']:+.1f}%" if pd.notna(r['net_sales_yoy']) else "—",
             f"{r['net_income_yoy']:+.1f}%" if pd.notna(r['net_income_yoy']) else "—",
@@ -169,8 +175,10 @@ def image_03_top15_table():
             elif c5 < 0:
                 cell_colors[i][8] = "#FEEBE8"
 
+    # 会社名列に幅を寄せる（均等割だと長い社名が隣のセルへはみ出す）
+    col_widths = [0.05, 0.07, 0.28, 0.08, 0.09, 0.09, 0.09, 0.115, 0.115]
     tbl = ax.table(cellText=rows, colLabels=cols, loc="center", cellLoc="center",
-                   cellColours=cell_colors,
+                   cellColours=cell_colors, colWidths=col_widths,
                    colColours=["#2E86AB"] * len(cols))
     tbl.auto_set_font_size(False)
     tbl.set_fontsize(10)
@@ -227,6 +235,9 @@ def image_04_car_distribution():
         ax.set_ylabel("CAR（％）")
         ax.set_title(f"{qname}（{qcode}）の類似決算 Top-15 の CAR 分布",
                      pad=40)
+        # 凡例がバーに被らないよう、凡例の分だけ上に空間を確保してから置く
+        ylo, yhi = ax.get_ylim()
+        ax.set_ylim(ylo, yhi + 0.55 * (yhi - ylo))
         ax.legend(loc="upper right", framealpha=0.95)
         ax.grid(axis="y", alpha=0.3)
 

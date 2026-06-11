@@ -191,8 +191,12 @@ def make_oil_ni_vs_cf(df: pd.DataFrame) -> None:
         ax.set_xticklabels([f"'{str(fy)[-2:]}" for fy in sub["fy"].values], fontsize=13)
         ax.set_ylabel("（千億円）" if ax is axes[0] else "",
                       fontsize=16, color=C_TEXT_SUB)
+        # 縦書きの負値ラベルはバー下端からさらに下へ伸びる。下余白が足りないと
+        # x軸目盛（'20 など）に重なるため、レンジ比で下側の余白を確保する
         ylo, yhi = ax.get_ylim()
-        ax.set_ylim(ylo * 1.55 if ylo < 0 else ylo, yhi * 1.45)
+        vmin = min(float(ni.min()), float(cf.min()), 0.0)
+        bottom = vmin - 0.24 * (yhi - ylo) if vmin < 0 else ylo
+        ax.set_ylim(bottom, yhi * 1.45)
         ax.text(0.5, 0.97, name, fontsize=16, fontweight="bold",
                 color=color, transform=ax.transAxes, ha="center", va="top")
         ax.grid(axis="y", color=C_GRID, linewidth=0.5)
@@ -369,9 +373,11 @@ def make_eneos_quality(df: pd.DataFrame) -> None:
                    edgecolors="white", linewidths=1.2)
     for xi, v in zip(x, accr):
         if pd.notna(v):
-            ax_top.text(xi, v + (0.006 if v >= 0 else -0.007),
+            # -0.05 の閾値破線の少し上にある値は、下に出すとラベルが破線に重なる
+            above = v >= 0 or (-0.05 < v < -0.03)
+            ax_top.text(xi, v + (0.006 if above else -0.007),
                         f"{v:+.3f}", ha="center",
-                        va="bottom" if v >= 0 else "top",
+                        va="bottom" if above else "top",
                         fontsize=14, color=C_TEXT, fontweight="bold")
     ax_top.axhline(0, color="#444444", linewidth=0.8)
     ax_top.axhline(-0.05, color=C_HEALTHY, linestyle="--", linewidth=0.7, alpha=0.7)

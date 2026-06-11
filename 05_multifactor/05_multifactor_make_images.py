@@ -375,6 +375,7 @@ def make_majors_radar(df: pd.DataFrame) -> None:
         ax.set_yticklabels(["25", "50", "75"], fontsize=16, color=C_TEXT_SUB)
         ax.set_xticks(angles)
         ax.set_xticklabels(FACTORS, fontsize=16, color=C_TEXT)
+        ax.xaxis.set_tick_params(pad=14)  # 高スコアの頂点とファクター名が触れないよう外へ
 
         total = r["score_総合"]
         label = r["銘柄名"]
@@ -397,7 +398,9 @@ def make_majors_radar(df: pd.DataFrame) -> None:
 def make_oil_refining_compare(df: pd.DataFrame) -> None:
     """連載01 と同じ 3 社を 7 ファクター・レーダーで可視化。"""
     fig = plt.figure(figsize=(FIG_W, 5.6))
-    gs = fig.add_gridspec(1, 3, width_ratios=[1, 1, 1], wspace=0.35)
+    # wspace 0.35 では Momentum / Growth など東西方向のファクター名が
+    # 隣のパネルのラベルと交錯するため、間隔を広めに取る
+    gs = fig.add_gridspec(1, 3, width_ratios=[1, 1, 1], wspace=0.85)
 
     angles = np.linspace(0, 2 * np.pi, len(FACTORS), endpoint=False).tolist()
     angles_closed = angles + [angles[0]]
@@ -425,6 +428,7 @@ def make_oil_refining_compare(df: pd.DataFrame) -> None:
         ax.set_yticklabels(["25", "50", "75"], fontsize=16, color=C_TEXT_SUB)
         ax.set_xticks(angles)
         ax.set_xticklabels(FACTORS, fontsize=16, color=C_TEXT)
+        ax.xaxis.set_tick_params(pad=14)
         ax.set_title(f"{label}\n（総合 {r['score_総合']:.0f}）",
                      fontsize=16, fontweight="bold", color=C_TEXT, pad=36)
 

@@ -47,6 +47,17 @@ def _short(s: str, n: int) -> str:
     return s if len(s) <= n else s[: n - 1] + "…"
 
 
+def _wrap2(s: str, w: int) -> str:
+    """長いラベルを w 文字で 2 行に折り返す（切り捨てずに全名を見せる）。"""
+    s = str(s)
+    if len(s) <= w:
+        return s
+    second = s[w:]
+    if len(second) > w:
+        second = second[: w - 1] + "…"
+    return s[:w] + "\n" + second
+
+
 OUT_DIR = Path(r"C:/minnanosaiban/hotline/docs/blog/posts/img/08_segment_analysis")
 OUT_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -212,9 +223,10 @@ def make_sony_portfolio(by_code: dict) -> None:
         })
     df = pd.DataFrame(seg_data).sort_values("sales_oku", ascending=True)
 
+    # wspace 0.45 では右パネルの y軸ラベルが左パネルの枠内まで食い込むため広めに取る
     fig, (ax_l, ax_r) = plt.subplots(1, 2, figsize=(FIG_W, 6.6),
                                      gridspec_kw=dict(width_ratios=[1.25, 1],
-                                                      wspace=0.45))
+                                                      wspace=0.78))
     fig.subplots_adjust(top=0.75, bottom=0.12, left=0.165, right=0.985)
 
     # 左: 売上構成
@@ -231,7 +243,7 @@ def make_sony_portfolio(by_code: dict) -> None:
         ax_l.text(max(r["oi_oku"], 0) + smax * 0.012, i + bw / 2, f"{r['oi_oku']:,.0f}億",
                   va="center", fontsize=15, color=C_OI, fontweight="bold")
     ax_l.set_yticks(y)
-    ax_l.set_yticklabels([_short(s, 13) for s in df["label"]], fontsize=15)
+    ax_l.set_yticklabels([_wrap2(s, 12) for s in df["label"]], fontsize=15)
     ax_l.set_xlim(0, smax * 1.22)
     ax_l.set_xlabel("億円", fontsize=17, color=C_TEXT_SUB)
     ax_l.tick_params(axis="x", labelsize=15)
@@ -255,7 +267,7 @@ def make_sony_portfolio(by_code: dict) -> None:
         ax_r.text(r["margin"] + mmax * 0.02, i, f"{r['margin']:.1f}%",
                   va="center", fontsize=15, fontweight="bold", color=C_TEXT)
     ax_r.set_yticks(y2)
-    ax_r.set_yticklabels([_short(s, 13) for s in df_m["label"]], fontsize=15)
+    ax_r.set_yticklabels([_wrap2(s, 12) for s in df_m["label"]], fontsize=15)
     ax_r.set_xlabel("営業利益率（%）", fontsize=17, color=C_TEXT)
     ax_r.set_xlim(0, mmax * 1.28)
     ax_r.tick_params(axis="x", labelsize=15)
@@ -321,7 +333,8 @@ def make_yoy_acceleration(dfg: pd.DataFrame, names: dict[str, str]) -> None:
     ax_r.set_yticks(y)
     ax_r.set_yticklabels([_ylab(r) for _, r in worst.iterrows()], fontsize=14)
     ax_r.set_xlabel("売上前期比成長率（%）", fontsize=17, color=C_TEXT_SUB)
-    ax_r.set_xlim(gmin * 1.55, 0)
+    # 値ラベルがバー左端の外側に出るため、1.55 倍では y軸の銘柄名に届いてしまう
+    ax_r.set_xlim(gmin * 1.9, 0)
     ax_r.tick_params(axis="x", labelsize=15)
     ax_r.grid(axis="x", color=C_GRID, linewidth=0.5)
     for sp in ("top", "right"):
@@ -397,7 +410,7 @@ def make_major_companies_2yr(by_code: dict, names: dict[str, str]) -> None:
                                        ["net_sales", "external_revenue", "total_revenue"])
             if cur_ns is None:
                 continue
-            rows.append({"label": label[:14],
+            rows.append({"label": label,
                          "prv": prv_ns / 1e8 if prv_ns else 0,
                          "cur": cur_ns / 1e8,
                          "growth": ((cur_ns - prv_ns) / abs(prv_ns) * 100) if prv_ns else None})
@@ -446,7 +459,7 @@ def make_major_companies_2yr(by_code: dict, names: dict[str, str]) -> None:
                         color=col, fontweight="bold")
         ax.set_xlim(0, cmax * 1.2)
         ax.set_yticks(y)
-        ax.set_yticklabels([_short(s, 14) for s in df["label"]], fontsize=15)
+        ax.set_yticklabels([_wrap2(s, 14) for s in df["label"]], fontsize=15)
         ax.set_xlabel("売上（億円）", fontsize=16, color=C_TEXT_SUB)
         ax.tick_params(axis="x", labelsize=14)
         ax.legend(loc="lower right", fontsize=15, frameon=True,

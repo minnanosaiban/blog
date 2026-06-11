@@ -45,7 +45,7 @@ ax_l.text(0.60, 0.69, 'ファクタ', color=WHITE,
 # 区切り線
 ax_l.set_xlim(0, 1)
 ax_l.set_ylim(0, 1)
-ax_l.add_patch(patches.Rectangle((0.07, 0.578), 0.90, 0.004, facecolor=BLUE_L, linewidth=0, alpha=0.6))
+ax_l.add_patch(patches.Rectangle((0.07, 0.578), 0.85, 0.004, facecolor=BLUE_L, linewidth=0, alpha=0.6))
 
 # キャッチコピー
 ax_l.text(0.07, 0.48, '複数指標を', color=BLUE_L,

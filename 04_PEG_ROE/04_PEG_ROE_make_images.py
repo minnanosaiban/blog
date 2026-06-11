@@ -212,7 +212,8 @@ def make_garp_map(df: pd.DataFrame, out_path: Path):
     # ゾーンラベル
     ax.text(0.5, 55, "★ GARP 理想ゾーン", ha="center", va="top",
             fontsize=18, color=C_GARP_IDEAL, fontweight="bold")
-    ax.text(2.0, 55, "割高グロース", ha="center", va="top",
+    # x=2.0 だと右上の凡例の真下に入り判読不能になるため、凡例の左側に置く
+    ax.text(1.7, 55, "割高グロース", ha="center", va="top",
             fontsize=16, color=C_GROWTH)
     ax.text(0.5, -2.5, "バリュー候補 (低ROE)", ha="center", va="top",
             fontsize=16, color=C_VALUE)
