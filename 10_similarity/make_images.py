@@ -1,7 +1,7 @@
 """
 連載15 類似決算検索 ― 画像生成スクリプト
 
-入力 : data/blog15/features.parquet, similarity_with_car_marubeni.csv, _sojitz.csv, events_2026.parquet
+入力 : data/blog15/features.parquet, similarity_with_car_marubeni.csv, _sojitz.csv
 出力 : docs/blog/posts/img/15_similarity/*.png
 """
 from __future__ import annotations
@@ -12,7 +12,6 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 import matplotlib.patches as patches
-import numpy as np
 import pandas as pd
 from sklearn.decomposition import PCA
 
@@ -134,17 +133,16 @@ def image_02_feature_space():
 
 
 def image_03_top15_table():
-    """丸紅 Top-15 + CAR を表形式の matplotlib 画像で。"""
+    """丸紅 Top-15（コサイン類似度のみ）を表形式の matplotlib 画像で。"""
     df = pd.read_csv(DATA_DIR / "similarity_with_car_marubeni.csv")
     df = df.head(15).copy()
 
     fig, ax = plt.subplots(figsize=(FIG_W, 7.5))
     ax.axis("off")
-    ax.text(0.5, 1.02, "丸紅（8002）2026/3 期通期 に最も似た決算 Top-15 ＋ 各社の 2026/3 期 CAR",
+    ax.text(0.5, 1.02, "丸紅（8002）2026/3 期通期 に最も似た決算 Top-15（コサイン類似度）",
             transform=ax.transAxes, ha="center", fontsize=14, weight="bold")
 
-    cols = ["順位", "コード", "会社名", "類似度", "売上YoY", "純利YoY", "配当成長",
-            "CAR[-1,+1]", "CAR[-1,+5]"]
+    cols = ["順位", "コード", "会社名", "類似度", "売上YoY", "純利YoY", "配当成長"]
 
     def _name(s: str) -> str:
         """法人格を落として列幅に収める（長い社名がセル罫線を跨ぐのを防ぐ）。"""
@@ -161,24 +159,12 @@ def image_03_top15_table():
             f"{r['net_sales_yoy']:+.1f}%" if pd.notna(r['net_sales_yoy']) else "—",
             f"{r['net_income_yoy']:+.1f}%" if pd.notna(r['net_income_yoy']) else "—",
             f"{r['div_growth_pct']:+.1f}%" if pd.notna(r['div_growth_pct']) else "—",
-            f"{r['car_m1_p1']:+.2f}%" if pd.notna(r['car_m1_p1']) else "—",
-            f"{r['car_m1_p5']:+.2f}%" if pd.notna(r['car_m1_p5']) else "—",
         ])
 
-    # 色分け：CAR がプラスなら緑、マイナスなら赤
-    cell_colors = [["white"] * len(cols) for _ in rows]
-    for i, r in df.iterrows():
-        c5 = r.get("car_m1_p5")
-        if pd.notna(c5):
-            if c5 > 0:
-                cell_colors[i][8] = "#E8F4EA"
-            elif c5 < 0:
-                cell_colors[i][8] = "#FEEBE8"
-
     # 会社名列に幅を寄せる（均等割だと長い社名が隣のセルへはみ出す）
-    col_widths = [0.05, 0.07, 0.28, 0.08, 0.09, 0.09, 0.09, 0.115, 0.115]
+    col_widths = [0.06, 0.10, 0.34, 0.12, 0.13, 0.13, 0.12]
     tbl = ax.table(cellText=rows, colLabels=cols, loc="center", cellLoc="center",
-                   cellColours=cell_colors, colWidths=col_widths,
+                   colWidths=col_widths,
                    colColours=["#2E86AB"] * len(cols))
     tbl.auto_set_font_size(False)
     tbl.set_fontsize(10)
@@ -188,65 +174,13 @@ def image_03_top15_table():
         cell.get_text().set_color("white")
         cell.get_text().set_weight("bold")
 
-    avg_car5 = df["car_m1_p5"].mean()
-    win_rate = (df["car_m1_p5"] > 0).sum() / df["car_m1_p5"].notna().sum() * 100
-    fig.text(0.5, 0.02,
-             f"類似 Top-15 の 2026/3 期 平均 CAR[-1,+5] = {avg_car5:+.2f}% / 勝率 {win_rate:.1f}% "
-             f"（参考：丸紅自身 = -9.39%）",
+    fig.text(0.5, 0.04,
+             "業種コードを使わず、決算 10 指標のコサイン類似度のみで抽出 ― それでも総合商社が自然に上位へ",
              ha="center", fontsize=12, color="#555", style="italic")
     fig.tight_layout()
     bs.savefig_uniform(fig, OUT_DIR / "03_top15_marubeni.png")
     plt.close(fig)
     print("saved 03_top15_marubeni.png")
-
-
-def image_04_car_distribution():
-    """類似 Top-15 群の CAR 分布 vs クエリ銘柄自身。"""
-    sim_m = pd.read_csv(DATA_DIR / "similarity_with_car_marubeni.csv")
-    sim_s = pd.read_csv(DATA_DIR / "similarity_with_car_sojitz.csv")
-    e2026 = pd.read_parquet(DATA_DIR / "events_2026.parquet")
-    e2026["code"] = e2026["code"].astype(str)
-
-    fig, axes = plt.subplots(1, 2, figsize=(FIG_W, 5.5))
-
-    for ax, sim_df, qcode, qname, color in [
-        (axes[0], sim_m, "8002", "丸紅", "#2E86AB"),
-        (axes[1], sim_s, "2768", "双日", "#E26A2C"),
-    ]:
-        c1 = sim_df["car_m1_p1"].dropna()
-        c5 = sim_df["car_m1_p5"].dropna()
-        x = np.arange(len(sim_df))
-        ax.bar(x - 0.20, sim_df["car_m1_p1"], width=0.40, color="#A0C4D9", label="CAR[-1,+1]")
-        ax.bar(x + 0.20, sim_df["car_m1_p5"], width=0.40, color=color, label="CAR[-1,+5]")
-        ax.axhline(0, color="black", lw=0.6)
-        ax.axhline(c5.mean(), color="green", lw=1.0, ls="--",
-                   label=f"Top-15 平均 [-1,+5] = {c5.mean():+.2f}%")
-
-        # クエリ銘柄自身の CAR
-        own = e2026[e2026["code"] == qcode]
-        if len(own):
-            own_car5 = own["car_m1_p5"].iloc[0]
-            ax.axhline(own_car5, color="red", lw=1.8, ls=":",
-                       label=f"{qname} 自身 [-1,+5] = {own_car5:+.2f}%")
-
-        ax.set_xticks(x)
-        ax.set_xticklabels(sim_df["code"].astype(str), rotation=60, fontsize=8)
-        ax.set_xlabel("類似 Top-15 銘柄コード")
-        ax.set_ylabel("CAR（％）")
-        ax.set_title(f"{qname}（{qcode}）の類似決算 Top-15 の CAR 分布",
-                     pad=40)
-        # 凡例がバーに被らないよう、凡例の分だけ上に空間を確保してから置く
-        ylo, yhi = ax.get_ylim()
-        ax.set_ylim(ylo, yhi + 0.55 * (yhi - ylo))
-        ax.legend(loc="upper right", framealpha=0.95)
-        ax.grid(axis="y", alpha=0.3)
-
-    fig.suptitle("「過去類似決算群の CAR 分布」と「クエリ銘柄自身の CAR」の比較",
-                 y=1.02)
-    fig.tight_layout(rect=[0, 0, 1, 0.92])
-    bs.savefig_uniform(fig, OUT_DIR / "04_car_distribution.png")
-    plt.close(fig)
-    print("saved 04_car_distribution.png")
 
 
 def image_05_numeric_vs_embedding():
@@ -297,7 +231,6 @@ def main():
     image_01_pipeline()
     image_02_feature_space()
     image_03_top15_table()
-    image_04_car_distribution()
     image_05_numeric_vs_embedding()
     print(f"\nAll saved to: {OUT_DIR}")
 

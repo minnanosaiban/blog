@@ -28,15 +28,16 @@ ax_l.set_ylim(0, 1)
 
 ax_l.add_patch(patches.Rectangle((0.07, 0.875), 0.018, 0.055, facecolor=BLUE_L, linewidth=0))
 ax_l.text(0.110, 0.902, '連載 3-6', color=BLUE_L, fontsize=24, va='center', ha='left', fontweight='bold')
-ax_l.text(0.07, 0.69, 'PCA 異常検知', color=WHITE, fontsize=72, va='center', ha='left', fontweight='bold')
-ax_l.add_patch(patches.Rectangle((0.07, 0.578), 0.85, 0.004, facecolor=BLUE_L, linewidth=0, alpha=0.6))
-ax_l.text(0.07, 0.48, '「共動の崩れ」で', color=BLUE_L, fontsize=36, va='center', ha='left', fontweight='bold')
-ax_l.text(0.07, 0.37, '突発材料を検出', color=WHITE, fontsize=36, va='center', ha='left', fontweight='bold')
+ax_l.text(0.07, 0.70, 'PCA', color=WHITE, fontsize=72, va='center', ha='left', fontweight='bold')
+ax_l.text(0.07, 0.55, '異常検知', color=WHITE, fontsize=72, va='center', ha='left', fontweight='bold')
+ax_l.add_patch(patches.Rectangle((0.07, 0.45), 0.85, 0.004, facecolor=BLUE_L, linewidth=0, alpha=0.6))
+ax_l.text(0.07, 0.35, '「共動の崩れ」で', color=BLUE_L, fontsize=36, va='center', ha='left', fontweight='bold')
+ax_l.text(0.07, 0.24, '突発材料を検出', color=WHITE, fontsize=36, va='center', ha='left', fontweight='bold')
 
 # ── 右：束で動く仲間（灰）＋ 1 本だけ急変（赤）──
-ax_r = fig.add_axes([0.46, 0.10, 0.50, 0.80], facecolor=BG)
+ax_r = fig.add_axes([0.46, 0.08, 0.50, 0.84], facecolor=BG)
 ax_r.set_xlim(0, 100)
-ax_r.set_ylim(0, 100)
+ax_r.set_ylim(28, 100)
 ax_r.axis('off')
 
 x = np.linspace(4, 96, 240)
@@ -53,7 +54,7 @@ brk = 66
 ya = common + 0.0
 mask = x > brk
 ya = ya.copy()
-ya[mask] = ya[mask] + (x[mask] - brk) * 1.75
+ya[mask] = ya[mask] + (x[mask] - brk) * 1.2
 ax_r.plot(x, ya, color=RED, lw=3.6, solid_capstyle='round', zorder=5)
 
 # 共動が崩れた日

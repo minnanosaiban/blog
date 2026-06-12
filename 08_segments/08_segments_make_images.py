@@ -3,10 +3,8 @@ blog/12_セグメント発進力.md 用の画像生成スクリプト。
 
 生成画像:
   01_segment_coverage.png       — セグメントデータカバレッジ（13 yuho vs 233 statements）
-  02_sony_segment_portfolio.png — ソニーG 6 セグメントの売上 × 営利構造
   03_segment_yoy_acceleration.png — セグメント前期比成長率 加速 Top10 / 減速 Worst10
   04_high_margin_segments.png   — 営業利益率 30%超 セグメント発掘
-  05_major_companies_2yr.png    — トヨタ / ソニーG / 信越化 / 任天堂 の 2 年セグメント推移
 
 実行: python scripts/blog/11_segment_analysis_make_images.py
 """
@@ -201,88 +199,6 @@ def make_segment_coverage(by_code: dict) -> None:
     plt.close(fig)
 
 
-# ── 2) ソニーG 6 セグメントの売上 × 営利構造 ──────────────────────────────────
-def make_sony_portfolio(by_code: dict) -> None:
-    code = "6758"
-    if code not in by_code or len(by_code[code]) < 1:
-        return
-    yrs = sorted(by_code[code].keys())
-    latest = by_code[code][yrs[-1]]
-
-    seg_data = []
-    for s in latest:
-        ns = get_segment_value(s, ["net_sales", "external_revenue", "total_revenue"])
-        oi = get_segment_value(s, ["operating_income", "segment_profit"])
-        if ns is None:
-            continue
-        seg_data.append({
-            "label": s.get("label") or s.get("key"),
-            "sales_oku": ns / 1e8,
-            "oi_oku": oi / 1e8 if isinstance(oi, (int, float)) else 0,
-            "margin": (oi / ns * 100) if isinstance(oi, (int, float)) and ns != 0 else None,
-        })
-    df = pd.DataFrame(seg_data).sort_values("sales_oku", ascending=True)
-
-    # wspace 0.45 では右パネルの y軸ラベルが左パネルの枠内まで食い込むため広めに取る
-    fig, (ax_l, ax_r) = plt.subplots(1, 2, figsize=(FIG_W, 6.6),
-                                     gridspec_kw=dict(width_ratios=[1.25, 1],
-                                                      wspace=0.78))
-    fig.subplots_adjust(top=0.75, bottom=0.12, left=0.165, right=0.985)
-
-    # 左: 売上構成
-    y = np.arange(len(df))
-    bw = 0.38
-    smax = df["sales_oku"].max()
-    ax_l.barh(y - bw / 2, df["sales_oku"], height=bw, color=C_NS,
-              alpha=0.9, edgecolor="white", linewidth=0.8, label="売上（億円）")
-    ax_l.barh(y + bw / 2, df["oi_oku"], height=bw, color=C_OI,
-              alpha=0.9, edgecolor="white", linewidth=0.8, label="営業利益（億円）")
-    for i, r in df.reset_index(drop=True).iterrows():
-        ax_l.text(r["sales_oku"] + smax * 0.012, i - bw / 2, f"{r['sales_oku']:,.0f}億",
-                  va="center", fontsize=15, color=C_NS, fontweight="bold")
-        ax_l.text(max(r["oi_oku"], 0) + smax * 0.012, i + bw / 2, f"{r['oi_oku']:,.0f}億",
-                  va="center", fontsize=15, color=C_OI, fontweight="bold")
-    ax_l.set_yticks(y)
-    ax_l.set_yticklabels([_wrap2(s, 12) for s in df["label"]], fontsize=15)
-    ax_l.set_xlim(0, smax * 1.22)
-    ax_l.set_xlabel("億円", fontsize=17, color=C_TEXT_SUB)
-    ax_l.tick_params(axis="x", labelsize=15)
-    ax_l.legend(loc="lower right", fontsize=15, frameon=True,
-                facecolor="white", edgecolor="#dddddd")
-    ax_l.grid(axis="x", color=C_GRID, linewidth=0.5)
-    for sp in ("top", "right"):
-        ax_l.spines[sp].set_visible(False)
-    ax_l.set_title(f"6 セグメントの売上 × 営業利益（{yrs[-1][:4]} 年度）",
-                   fontsize=18, fontweight="bold", color=C_TEXT, pad=30, loc="left")
-
-    # 右: 営業利益率（赤字セグメントは率の比較になじまないので除外）
-    df_m = df.dropna(subset=["margin"])
-    df_m = df_m[df_m["margin"].between(0, 100)].sort_values("margin", ascending=True)
-    y2 = np.arange(len(df_m))
-    mmax = df_m["margin"].max()
-    colors = [C_UP if m >= 15 else "#85c1e9" if m >= 8 else "#888888" for m in df_m["margin"]]
-    ax_r.barh(y2, df_m["margin"], color=colors, alpha=0.9,
-              edgecolor="white", linewidth=0.8)
-    for i, r in df_m.reset_index(drop=True).iterrows():
-        ax_r.text(r["margin"] + mmax * 0.02, i, f"{r['margin']:.1f}%",
-                  va="center", fontsize=15, fontweight="bold", color=C_TEXT)
-    ax_r.set_yticks(y2)
-    ax_r.set_yticklabels([_wrap2(s, 12) for s in df_m["label"]], fontsize=15)
-    ax_r.set_xlabel("営業利益率（%）", fontsize=17, color=C_TEXT)
-    ax_r.set_xlim(0, mmax * 1.28)
-    ax_r.tick_params(axis="x", labelsize=15)
-    ax_r.grid(axis="x", color=C_GRID, linewidth=0.5)
-    for sp in ("top", "right"):
-        ax_r.spines[sp].set_visible(False)
-    ax_r.set_title("セグメント別 営業利益率  ―  音楽が突出",
-                   fontsize=18, fontweight="bold", color=C_TEXT, pad=30, loc="left")
-
-    fig.suptitle("ソニーグループの事業ポートフォリオ  ―  6 セグメントの収益構造",
-                 fontsize=23, fontweight="bold", color=C_TEXT, y=0.965)
-    _savefig_vpad(fig, OUT_DIR / "02_sony_segment_portfolio.png")
-    plt.close(fig)
-
-
 # ── 3) セグメント前期比成長率 加速 Top10 / 減速 Worst10 ─────────────────────
 def make_yoy_acceleration(dfg: pd.DataFrame, names: dict[str, str]) -> None:
     # 規模 100 億以上で絞る
@@ -384,96 +300,6 @@ def make_high_margin_segments(dfg: pd.DataFrame, names: dict[str, str]) -> None:
         fontsize=22, fontweight="bold", color=C_TEXT, pad=32, loc="left",
     )
     _savefig_vpad(fig, OUT_DIR / "04_high_margin_segments.png")
-    plt.close(fig)
-
-
-# ── 5) 主要 4 銘柄の 2 年セグメント推移 ────────────────────────────────────
-def make_major_companies_2yr(by_code: dict, names: dict[str, str]) -> None:
-    targets = [("7203", "トヨタ"), ("6758", "ソニーＧ"),
-               ("4063", "信越化"), ("7974", "任天堂")]
-
-    # セグメント別「売上」を 2 年分プロットできる銘柄だけを先に確定させる
-    # （例: トヨタはセグメントに営業利益しか無く売上が取れないため除外される）
-    plots = []
-    for code, name in targets:
-        if code not in by_code or len(by_code[code]) < 2:
-            continue
-        yrs = sorted(by_code[code].keys())
-        prev_yr, cur_yr = yrs[-2], yrs[-1]
-        prev_map = {s.get("key"): s for s in by_code[code][prev_yr]}
-        rows = []
-        for s in by_code[code][cur_yr]:
-            key = s.get("key")
-            label = s.get("label") or key
-            cur_ns = get_segment_value(s, ["net_sales", "external_revenue", "total_revenue"])
-            prv_ns = get_segment_value(prev_map.get(key, {}),
-                                       ["net_sales", "external_revenue", "total_revenue"])
-            if cur_ns is None:
-                continue
-            rows.append({"label": label,
-                         "prv": prv_ns / 1e8 if prv_ns else 0,
-                         "cur": cur_ns / 1e8,
-                         "growth": ((cur_ns - prv_ns) / abs(prv_ns) * 100) if prv_ns else None})
-        if not rows:
-            continue
-        df = pd.DataFrame(rows).sort_values("cur", ascending=True)
-        plots.append((code, name, prev_yr, cur_yr, df))
-
-    if not plots:
-        return
-
-    # 描画可能銘柄数に応じてレイアウトを決定。セグメント名が長いので
-    # 2 社までは縦積み（各パネル全幅）にしてラベル衝突を避ける。
-    n = len(plots)
-    keys = [chr(ord("a") + i) for i in range(n)]
-    if n == 1:
-        mosaic, figsize, top = [["a"]], (FIG_W, 4.8), 0.79
-    elif n == 2:
-        mosaic, figsize, top = [["a"], ["b"]], (FIG_W, 9.2), 0.79
-    elif n == 3:
-        mosaic, figsize, top = [["a", "b"], ["c", "c"]], (FIG_W, 10), 0.83
-    else:
-        mosaic, figsize, top = [["a", "b"], ["c", "d"]], (FIG_W, 10), 0.83
-
-    fig, axd = plt.subplot_mosaic(mosaic, figsize=figsize)
-    fig.subplots_adjust(top=top, bottom=0.08, left=0.2, right=0.98,
-                        hspace=0.55, wspace=0.5)
-    axes = [axd[k] for k in keys]
-
-    for ax, (code, name, prev_yr, cur_yr, df) in zip(axes, plots):
-        y = np.arange(len(df))
-        bw = 0.36
-        ax.barh(y - bw / 2, df["prv"], height=bw, color="#aaaaaa",
-                alpha=0.7, edgecolor="white", linewidth=0.5,
-                label=f"{prev_yr[:4]}")
-        ax.barh(y + bw / 2, df["cur"], height=bw, color=C_NS,
-                alpha=0.85, edgecolor="white", linewidth=0.8,
-                label=f"{cur_yr[:4]}")
-        cmax = max(df["cur"].max(), df["prv"].max())
-        for i, r in df.reset_index(drop=True).iterrows():
-            g = r["growth"]
-            if g is not None:
-                col = C_UP if g >= 0 else C_DOWN
-                ax.text(max(r["cur"], r["prv"]) + cmax * 0.02, i,
-                        f"{g:+.1f}%", va="center", fontsize=15,
-                        color=col, fontweight="bold")
-        ax.set_xlim(0, cmax * 1.2)
-        ax.set_yticks(y)
-        ax.set_yticklabels([_wrap2(s, 14) for s in df["label"]], fontsize=15)
-        ax.set_xlabel("売上（億円）", fontsize=16, color=C_TEXT_SUB)
-        ax.tick_params(axis="x", labelsize=14)
-        ax.legend(loc="lower right", fontsize=15, frameon=True,
-                  facecolor="white", edgecolor="#dddddd")
-        ax.grid(axis="x", color=C_GRID, linewidth=0.5)
-        for sp in ("top", "right"):
-            ax.spines[sp].set_visible(False)
-        ax.set_title(f"{name} ({code})", fontsize=18,
-                     fontweight="bold", color=C_TEXT, pad=24, loc="left")
-
-    fig.suptitle(
-        f"主要 {len(plots)} 銘柄のセグメント 2 年推移  ―  決算短信 XBRL から抽出",
-        fontsize=23, fontweight="bold", color=C_TEXT, y=0.975)
-    _savefig_vpad(fig, OUT_DIR / "05_major_companies_2yr.png")
     plt.close(fig)
 
 
@@ -620,13 +446,9 @@ if __name__ == "__main__":
 
     make_segment_coverage(by_code)
     print("[ok] 01_segment_coverage.png")
-    make_sony_portfolio(by_code)
-    print("[ok] 02_sony_segment_portfolio.png")
     make_yoy_acceleration(dfg, names_short)
     print("[ok] 03_segment_yoy_acceleration.png")
     make_high_margin_segments(dfg, names_short)
     print("[ok] 04_high_margin_segments.png")
-    make_major_companies_2yr(by_code, names_short)
-    print("[ok] 05_major_companies_2yr.png")
     make_eneos_peakout(by_code)
     print("[ok] 06_eneos_segments.png")

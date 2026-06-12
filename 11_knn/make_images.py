@@ -43,9 +43,9 @@ def image_01_pipeline():
     steps = [
         (0.3, 1.7, 2.2, 1.6, "1. 類似 Top-K\n（連載15）", "#6FA8D6"),
         (2.9, 1.7, 2.2, 1.6, "2. 類似群の\nCAR を集計", "#2E86AB"),
-        (5.5, 1.7, 2.2, 1.6, "3. 平均=予測値\n（K-NN 回帰）", "#E26A2C"),
+        (5.5, 1.7, 2.2, 1.6, "3. 群れの\nふつうの反応\n（近傍平均）", "#E26A2C"),
         (8.1, 1.7, 2.2, 1.6, "4. 自身の\n実績 CAR\nと比較", "#A23B72"),
-        (10.7, 1.7, 2.0, 1.6, "5. 誤差大\n→ 個別\nショック", "#48A14D"),
+        (10.7, 1.7, 2.0, 1.6, "5. 外れ大\n→ 個別\nショック", "#48A14D"),
     ]
     for x, y, w, h, t, c in steps:
         _box(ax, x, y, w, h, t, color=c, fontsize=20)
@@ -53,9 +53,9 @@ def image_01_pipeline():
         x1 = steps[i][0] + steps[i][2]; x2 = steps[i + 1][0]
         _arrow(ax, x1, 2.5, x2, 2.5)
 
-    ax.text(6.5, 4.75, "連載16: K-NN 回帰で「類似決算群の CAR から自身の CAR を予測」",
+    ax.text(6.5, 4.75, "連載16: K-NN で「似た決算群から外れた銘柄＝個別ショック」を仕分ける",
             ha="center", fontsize=24, weight="bold")
-    ax.text(6.5, 0.85, "結論：予測としては失敗（r ≈ 0）。しかし「予測 vs 実績の乖離」が個別ショック検出器として機能",
+    ax.text(6.5, 0.85, "値・方向そのものは予測できない（r ≈ 0）。だから当てにいかず、似た決算群から外れた銘柄を抽出する",
             ha="center", fontsize=18, color="#555", style="italic")
     ax.text(6.5, 0.30, "フェーズ4（AI統合）の締めくくり。全16連載の到達点と限界を実証",
             ha="center", fontsize=16, color="#666")
@@ -125,7 +125,7 @@ def image_03_shocks_table():
     ]:
         sub = sub.reset_index(drop=True)
         x = np.arange(len(sub))
-        ax.barh(x - 0.20, sub["pred_K15_p5"], height=0.40, color="#C0C0C0", label="予測（類似Top-15）")
+        ax.barh(x - 0.20, sub["pred_K15_p5"], height=0.40, color="#C0C0C0", label="近傍平均（似たTop-15）")
         ax.barh(x + 0.20, sub["car_m1_p5"], height=0.40, color=color, label="実績")
         ax.axvline(0, color="black", lw=0.6)
         ax.set_yticks(x)
@@ -140,7 +140,7 @@ def image_03_shocks_table():
         # 数値ラベル
         for i, (p, a, e) in enumerate(zip(sub["pred_K15_p5"], sub["car_m1_p5"], sub["err_K15_p5"])):
             ax.text(a + (1 if a >= 0 else -1), i + 0.20,
-                    f"{a:+.1f}% (誤差 {e:+.1f}pp)",
+                    f"{a:+.1f}% (外れ {e:+.1f}pp)",
                     va="center", fontsize=12, color=color, weight="bold",
                     ha="left" if a >= 0 else "right")
         # 注釈はバー先端の外側に伸びる。余白が無いと軸外へはみ出して
@@ -152,70 +152,13 @@ def image_03_shocks_table():
         else:                                        # ネガ側パネル: 注釈は左へ
             ax.set_xlim(lo - 0.45 * rng, hi)
 
-    fig.suptitle("個別ショック銘柄 ― K-NN 予測と実績が大きく乖離した銘柄",
+    fig.suptitle("個別ショック ― 似た決算群（近傍）の反応から大きく外れた銘柄",
                  y=0.96)
     fig.tight_layout()
     fig.subplots_adjust(top=0.75)
     bs.savefig_uniform(fig, OUT_DIR / "03_shocks_top10.png")
     plt.close(fig)
     print("saved 03_shocks_top10.png")
-
-
-def image_04_K_sensitivity():
-    """K の感度分析"""
-    acc = pd.read_csv(B16 / "accuracy_by_K.csv")
-    acc_p5 = acc[acc["window"] == "[-1,+5]"]
-    acc_p1 = acc[acc["window"] == "[-1,+1]"]
-
-    fig, axes = plt.subplots(1, 3, figsize=(FIG_W, 4.5))
-    Ks = acc_p5["K"]
-
-    ax = axes[0]
-    ax.plot(Ks, acc_p1["RMSE"], "o-", color="#2E86AB", label="CAR[-1,+1]", lw=2)
-    ax.plot(Ks, acc_p5["RMSE"], "s-", color="#A23B72", label="CAR[-1,+5]", lw=2)
-    # ベースライン（全銘柄平均）
-    ax.axhline(10.48, color="gray", ls="--", lw=1, label="ベースライン (全銘柄平均)")
-    ax.set_xlabel("K（類似銘柄数）")
-    ax.set_ylabel("RMSE（%）")
-    ax.set_title("予測 RMSE（小さいほど精度高）", fontsize=16)
-    ax.set_xticks(Ks)
-    # 凡例が折れ線・目盛に被らないよう、凡例の分だけ上に空間を作る
-    ylo, yhi = ax.get_ylim()
-    ax.set_ylim(ylo, yhi + 0.50 * (yhi - ylo))
-    ax.legend(loc="upper right", fontsize=12)
-    ax.grid(alpha=0.3)
-
-    ax = axes[1]
-    ax.plot(Ks, acc_p1["corr"], "o-", color="#2E86AB", label="CAR[-1,+1]", lw=2)
-    ax.plot(Ks, acc_p5["corr"], "s-", color="#A23B72", label="CAR[-1,+5]", lw=2)
-    ax.axhline(0, color="black", lw=0.5)
-    ax.set_xlabel("K（類似銘柄数）")
-    ax.set_ylabel("相関係数 r")
-    ax.set_title("予測と実績の相関（高いほど良い）", fontsize=16)
-    ax.set_xticks(Ks)
-    ax.set_ylim(-0.2, 0.2)
-    ax.legend(fontsize=12)
-    ax.grid(alpha=0.3)
-
-    ax = axes[2]
-    ax.plot(Ks, acc_p1["dir_match_pct"], "o-", color="#2E86AB", label="CAR[-1,+1]", lw=2)
-    ax.plot(Ks, acc_p5["dir_match_pct"], "s-", color="#A23B72", label="CAR[-1,+5]", lw=2)
-    ax.axhline(50, color="gray", ls="--", lw=1, label="ランダム (50%)")
-    ax.set_xlabel("K（類似銘柄数）")
-    ax.set_ylabel("方向一致率（%）")
-    ax.set_title("方向一致率（+ or - の符号）", fontsize=16)
-    ax.set_xticks(Ks)
-    ax.set_ylim(40, 70)
-    ax.legend(fontsize=12)
-    ax.grid(alpha=0.3)
-
-    fig.suptitle("K の感度分析 ― 類似銘柄数を変えると何が起きるか",
-                 y=0.98)
-    fig.tight_layout()
-    fig.subplots_adjust(top=0.72)
-    bs.savefig_uniform(fig, OUT_DIR / "04_K_sensitivity.png")
-    plt.close(fig)
-    print("saved 04_K_sensitivity.png")
 
 
 def image_05_strategy_flow():
@@ -235,7 +178,7 @@ def image_05_strategy_flow():
     _box(ax, 0.3, 3.3, 4.0, 0.9, "進捗率Z / アクルーアル\n三角検証 / セグメント\n(連載09-12)",
          color="#48A14D", fontsize=10)
     _box(ax, 4.6, 3.3, 4.0, 0.9, "類似決算検索\n(連載15)", color="#48A14D", fontsize=10)
-    _box(ax, 8.9, 3.3, 3.8, 0.9, "K-NN 予測 + 個別ショック\n(連載16)", color="#48A14D", fontsize=10)
+    _box(ax, 8.9, 3.3, 3.8, 0.9, "K-NN 分類 ― 個別ショック\n(連載16)", color="#48A14D", fontsize=10)
 
     # Arrows
     for x1, x2 in [(1.8, 1.8), (5.1, 5.1), (8.4, 8.4), (11.4, 10.8)]:
@@ -269,7 +212,6 @@ def main():
     image_01_pipeline()
     image_02_pred_vs_actual()
     image_03_shocks_table()
-    image_04_K_sensitivity()
     image_05_strategy_flow()
     print(f"\nAll saved to: {OUT_DIR}")
 

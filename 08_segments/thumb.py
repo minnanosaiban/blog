@@ -44,9 +44,9 @@ zero_x = 40
 scale  = 0.28
 
 segments = [
-    (76, 'テストシステム', +50.9, GREEN),
-    (52, '次世代事業',    +127,  BLUE_L),
-    (28, '金融',         -55,   '#ff6b6b'),
+    (80, 'テストシステム', +50.9, GREEN),
+    (53, '次世代事業',    +127,  BLUE_L),
+    (26, '金融',         -55,   '#ff6b6b'),
 ]
 
 for y, name, growth, color in segments:
@@ -65,7 +65,7 @@ for y, name, growth, color in segments:
     ax_r.text(end_x + offset, y, f'{sign}{growth:.0f}%', color=color, fontsize=24,
               ha=ha, va='center', fontweight='bold')
 
-ax_r.plot([zero_x, zero_x], [10, 92], color=SOFT, linewidth=1.5, alpha=0.5)
+ax_r.plot([zero_x, zero_x], [10, 96], color=SOFT, linewidth=1.5, alpha=0.5)
 
 OUT = r"C:/minnanosaiban/hotline/docs/blog/posts/img/08_segment_analysis/00_thumbnail.png"
 os.makedirs(os.path.dirname(OUT), exist_ok=True)

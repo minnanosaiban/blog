@@ -390,10 +390,10 @@ def make_downside_top10(m: pd.DataFrame) -> None:
     plt.close(fig)
 
 
-# ── 5) 総合商社 8 社の予想検証 × 連載10 アクルーアル接続 ──────────────────
+# ── 5) 総合商社 8 社の予想検証 × アクルーアル接続 ──────────────────
 def make_trading_companies(m: pd.DataFrame) -> None:
-    """総合商社 8 社の予想検証 + 連載10 で算出した平均アクルーアル比率を並べる。"""
-    # 連載10 と共通の総合商社・エネルギー 8 社
+    """総合商社 8 社の予想検証 + 「2-3」で算出した平均アクルーアル比率を並べる。"""
+    # 共通の総合商社・エネルギー 8 社
     targets = [
         ("8053", "住友商事",   -0.0075),
         ("8001", "伊藤忠商事", -0.0150),
@@ -473,10 +473,10 @@ def make_trading_companies(m: pd.DataFrame) -> None:
     ax_l.grid(axis="x", color=C_GRID, linewidth=0.6)
     for sp in ("top", "right"):
         ax_l.spines[sp].set_visible(False)
-    ax_l.set_title("予想検証（連載11）：業績予想の強気・保守",
+    ax_l.set_title("コンセンサス予想を検証：業績予想の強気・保守",
                    fontsize=21, fontweight="bold", color=C_TEXT, pad=30, loc="left")
 
-    # ── 右: 連載10 のアクルーアル比率 ──────────────────────────────────
+    # ── 右: アクルーアル比率 ──────────────────────────────────
     ax_r = axes[1]
     colors = ["#5a9a72" if a < -0.01 else "#85c1e9" if a < 0 else "#F39C12"
               for a in rdf["accrual"]]
@@ -496,7 +496,7 @@ def make_trading_companies(m: pd.DataFrame) -> None:
     ax_r.grid(axis="x", color=C_GRID, linewidth=0.6)
     for sp in ("top", "right"):
         ax_r.spines[sp].set_visible(False)
-    ax_r.set_title("アクルーアル（連載10）：利益の質",
+    ax_r.set_title("アクルーアル：利益の質",
                    fontsize=21, fontweight="bold", color=C_TEXT, pad=30, loc="left")
 
     fig.suptitle(

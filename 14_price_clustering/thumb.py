@@ -30,11 +30,11 @@ ax_l.set_ylim(0, 1)
 
 ax_l.add_patch(patches.Rectangle((0.07, 0.875), 0.018, 0.055, facecolor=BLUE_L, linewidth=0))
 ax_l.text(0.110, 0.902, '連載 3-5', color=BLUE_L, fontsize=24, va='center', ha='left', fontweight='bold')
-ax_l.text(0.07, 0.69, '階層型', color=WHITE, fontsize=72, va='center', ha='left', fontweight='bold')
-ax_l.text(0.60, 0.69, 'クラスタリング', color=WHITE, fontsize=36, va='center', ha='left', fontweight='bold')
-ax_l.add_patch(patches.Rectangle((0.07, 0.578), 0.85, 0.004, facecolor=BLUE_L, linewidth=0, alpha=0.6))
-ax_l.text(0.07, 0.48, '値動きの相関で', color=BLUE_L, fontsize=36, va='center', ha='left', fontweight='bold')
-ax_l.text(0.07, 0.37, '再現する業界地図', color=WHITE, fontsize=36, va='center', ha='left', fontweight='bold')
+ax_l.text(0.07, 0.70, '階層型', color=WHITE, fontsize=56, va='center', ha='left', fontweight='bold')
+ax_l.text(0.07, 0.55, 'クラスタリング', color=WHITE, fontsize=56, va='center', ha='left', fontweight='bold')
+ax_l.add_patch(patches.Rectangle((0.07, 0.45), 0.85, 0.004, facecolor=BLUE_L, linewidth=0, alpha=0.6))
+ax_l.text(0.07, 0.35, '値動きの相関で', color=BLUE_L, fontsize=36, va='center', ha='left', fontweight='bold')
+ax_l.text(0.07, 0.24, '再現する業界地図', color=WHITE, fontsize=36, va='center', ha='left', fontweight='bold')
 
 # ── 右：ブロック対角の相関ヒートマップ（＝クラスタ）──
 ax_r = fig.add_axes([0.52, 0.08, 0.44, 0.84], facecolor=BG)

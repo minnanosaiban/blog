@@ -44,8 +44,8 @@ BOX_W, BOX_H = 24, 28
 
 # ===== 左: EDINET / TDnet（2ソース） =====
 for cx, cy, label, color, sub in [
-    (24, 70, 'EDINET', BLUE_L, '有報'),
-    (24, 38, 'TDnet',  GREEN,  '決算短信'),
+    (24, 65, 'EDINET', BLUE_L, '有報'),
+    (24, 33, 'TDnet',  GREEN,  '決算短信'),
 ]:
     ax_r.add_patch(patches.FancyBboxPatch((cx-BOX_W/2, cy-BOX_H/2), BOX_W, BOX_H,
                                           boxstyle='round,pad=1',
@@ -54,26 +54,26 @@ for cx, cy, label, color, sub in [
     ax_r.text(cx, cy-7, sub,   color=SOFT,  fontsize=24, ha='center', va='center')
 
 # ===== 中央: XBRLパース =====
-ax_r.add_patch(patches.FancyBboxPatch((55-BOX_W/2, 54-BOX_H/2), BOX_W, BOX_H,
+ax_r.add_patch(patches.FancyBboxPatch((55-BOX_W/2, 49-BOX_H/2), BOX_W, BOX_H,
                                       boxstyle='round,pad=1',
                                       facecolor=BLUE_L, edgecolor='none', alpha=0.25))
-ax_r.text(55, 59, 'XBRL', color=WHITE, fontsize=24, ha='center', va='center', fontweight='bold')
-ax_r.text(55, 47, 'パース', color=SOFT, fontsize=24, ha='center', va='center')
+ax_r.text(55, 54, 'XBRL', color=WHITE, fontsize=24, ha='center', va='center', fontweight='bold')
+ax_r.text(55, 42, 'パース', color=SOFT, fontsize=24, ha='center', va='center')
 
 # ===== 右: JSON =====
-ax_r.add_patch(patches.FancyBboxPatch((86-BOX_W/2, 54-BOX_H/2), BOX_W, BOX_H,
+ax_r.add_patch(patches.FancyBboxPatch((86-BOX_W/2, 49-BOX_H/2), BOX_W, BOX_H,
                                       boxstyle='round,pad=1',
                                       facecolor=GREEN, edgecolor='none', alpha=0.25))
-ax_r.text(86, 54, 'JSON', color=WHITE, fontsize=24, ha='center', va='center', fontweight='bold')
+ax_r.text(86, 49, 'JSON', color=WHITE, fontsize=24, ha='center', va='center', fontweight='bold')
 
 # ===== 扇形矢印（EDINET/TDnet → パース） =====
-ax_r.annotate('', xy=(43, 58), xytext=(36, 67),
+ax_r.annotate('', xy=(43, 53), xytext=(36, 62),
               arrowprops=dict(arrowstyle='->', color=SOFT, lw=2, alpha=0.7))
-ax_r.annotate('', xy=(43, 50), xytext=(36, 41),
+ax_r.annotate('', xy=(43, 45), xytext=(36, 36),
               arrowprops=dict(arrowstyle='->', color=SOFT, lw=2, alpha=0.7))
 
 # ===== 矢印（パース → JSON） =====
-ax_r.annotate('', xy=(74, 54), xytext=(67, 54),
+ax_r.annotate('', xy=(74, 49), xytext=(67, 49),
               arrowprops=dict(arrowstyle='->', color=SOFT, lw=2, alpha=0.7))
 
 OUT = r"C:/minnanosaiban/hotline/docs/blog/posts/img/03_xbrl_to_json/00_thumbnail.png"

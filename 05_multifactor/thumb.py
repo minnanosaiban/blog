@@ -37,20 +37,18 @@ ax_l.text(0.110, 0.902, '連載 2-2', color=BLUE_L,
           fontsize=24, va='center', ha='left', fontweight='bold')
 
 # タイトル
-ax_l.text(0.07, 0.69, 'マルチ', color=WHITE,
+ax_l.text(0.07, 0.70, 'マルチ', color=WHITE,
           fontsize=72, va='center', ha='left', fontweight='bold')
-ax_l.text(0.60, 0.69, 'ファクタ', color=WHITE,
-          fontsize=36, va='center', ha='left', fontweight='bold')
+ax_l.text(0.07, 0.55, 'ファクター', color=WHITE,
+          fontsize=72, va='center', ha='left', fontweight='bold')
 
 # 区切り線
-ax_l.set_xlim(0, 1)
-ax_l.set_ylim(0, 1)
-ax_l.add_patch(patches.Rectangle((0.07, 0.578), 0.85, 0.004, facecolor=BLUE_L, linewidth=0, alpha=0.6))
+ax_l.add_patch(patches.Rectangle((0.07, 0.45), 0.85, 0.004, facecolor=BLUE_L, linewidth=0, alpha=0.6))
 
 # キャッチコピー
-ax_l.text(0.07, 0.48, '複数指標を', color=BLUE_L,
+ax_l.text(0.07, 0.35, '複数指標を', color=BLUE_L,
           fontsize=36, va='center', ha='left', fontweight='bold')
-ax_l.text(0.07, 0.37, '統合スコアで評価する', color=WHITE,
+ax_l.text(0.07, 0.24, '統合スコアで評価する', color=WHITE,
           fontsize=36, va='center', ha='left', fontweight='bold')
 
 # 英語フルネーム
