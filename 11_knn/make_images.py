@@ -41,7 +41,7 @@ def image_01_pipeline():
     fig, ax = plt.subplots(figsize=(FIG_W, 5.4))
     ax.set_xlim(0, 13); ax.set_ylim(0, 5.4); ax.axis("off")
     steps = [
-        (0.3, 1.7, 2.2, 1.6, "1. 類似 Top-K\n（連載15）", "#6FA8D6"),
+        (0.3, 1.7, 2.2, 1.6, "1. 類似 Top-K\n（前回 3-1）", "#6FA8D6"),
         (2.9, 1.7, 2.2, 1.6, "2. 類似群の\nCAR を集計", "#2E86AB"),
         (5.5, 1.7, 2.2, 1.6, "3. 群れの\nふつうの反応\n（近傍平均）", "#E26A2C"),
         (8.1, 1.7, 2.2, 1.6, "4. 自身の\n実績 CAR\nと比較", "#A23B72"),
@@ -53,11 +53,11 @@ def image_01_pipeline():
         x1 = steps[i][0] + steps[i][2]; x2 = steps[i + 1][0]
         _arrow(ax, x1, 2.5, x2, 2.5)
 
-    ax.text(6.5, 4.75, "連載16: K-NN で「似た決算群から外れた銘柄＝個別ショック」を仕分ける",
+    ax.text(6.5, 4.75, "K-NN で「似た決算群から外れた銘柄＝個別ショック」を仕分ける",
             ha="center", fontsize=24, weight="bold")
     ax.text(6.5, 0.85, "値・方向そのものは予測できない（r ≈ 0）。だから当てにいかず、似た決算群から外れた銘柄を抽出する",
             ha="center", fontsize=18, color="#555", style="italic")
-    ax.text(6.5, 0.30, "フェーズ4（AI統合）の締めくくり。全16連載の到達点と限界を実証",
+    ax.text(6.5, 0.30, "「当てる」ではなく「外れを拾う」 ― 機械学習の使いどころを見極める",
             ha="center", fontsize=16, color="#666")
     fig.tight_layout()
     bs.savefig_uniform(fig, OUT_DIR / "01_pipeline.png")
@@ -114,7 +114,8 @@ def image_02_pred_vs_actual():
 def image_03_shocks_table():
     """個別ショック Top-15 を可視化（ポジ・ネガ並列）"""
     df = pd.read_csv(B16 / "predictions.csv")
-    df["company"] = df["company"].astype(str).str[:14]
+    df["company"] = (df["company"].astype(str)
+                     .str.replace("株式会社", "", regex=False).str.strip().str[:11])
     pos = df.nlargest(10, "err_K15_p5").copy()
     neg = df.nsmallest(10, "err_K15_p5").copy()
 
@@ -129,28 +130,31 @@ def image_03_shocks_table():
         ax.barh(x + 0.20, sub["car_m1_p5"], height=0.40, color=color, label="実績")
         ax.axvline(0, color="black", lw=0.6)
         ax.set_yticks(x)
-        ax.set_yticklabels([f"{r['code']} {r['company']}" for _, r in sub.iterrows()], fontsize=9)
+        ax.set_yticklabels([f"{r['code']} {r['company']}" for _, r in sub.iterrows()], fontsize=13)
         ax.set_xlabel("CAR[-1,+5]（%）")
-        ax.set_title(title, pad=40)
+        ax.set_title(title, pad=40, fontsize=16)
         # 凡例は軸内に置くと下段のバー・注釈を覆うため、パネル上端の外（タイトル下）へ
         ax.legend(loc="lower left", bbox_to_anchor=(0, 1.01), ncols=2,
                   fontsize=14, frameon=False)
         ax.grid(axis="x", alpha=0.3)
         ax.invert_yaxis()
-        # 数値ラベル
-        for i, (p, a, e) in enumerate(zip(sub["pred_K15_p5"], sub["car_m1_p5"], sub["err_K15_p5"])):
-            ax.text(a + (1 if a >= 0 else -1), i + 0.20,
-                    f"{a:+.1f}% (外れ {e:+.1f}pp)",
-                    va="center", fontsize=12, color=color, weight="bold",
-                    ha="left" if a >= 0 else "right")
-        # 注釈はバー先端の外側に伸びる。余白が無いと軸外へはみ出して
-        # y軸の銘柄名と重なるため、注釈の伸びる側に広めの余白を取る
+        # 数値ラベルは常にバーと反対側の空き領域（パネル内の固定列）に置く。
+        # バー先端に付けると、ネガ側で軸外にはみ出して銘柄名と重なるため。
+        positive_panel = (sub["car_m1_p5"] >= 0).mean() >= 0.5
         lo, hi = ax.get_xlim()
         rng = hi - lo
-        if (sub["car_m1_p5"] >= 0).mean() >= 0.5:   # ポジ側パネル: 注釈は右へ
-            ax.set_xlim(lo, hi + 0.45 * rng)
-        else:                                        # ネガ側パネル: 注釈は左へ
-            ax.set_xlim(lo - 0.45 * rng, hi)
+        if positive_panel:
+            ax.set_xlim(lo - 0.52 * rng, hi + 0.02 * rng)
+            lo, hi = ax.get_xlim()
+            label_x, label_ha = lo + 0.01 * (hi - lo), "left"
+        else:
+            ax.set_xlim(lo - 0.02 * rng, hi + 0.52 * rng)
+            lo, hi = ax.get_xlim()
+            label_x, label_ha = hi - 0.01 * (hi - lo), "right"
+        for i, (a, e) in enumerate(zip(sub["car_m1_p5"], sub["err_K15_p5"])):
+            ax.text(label_x, i + 0.20, f"{a:+.1f}%（外れ{e:+.1f}pp）",
+                    va="center", fontsize=12, color=color, weight="bold",
+                    ha=label_ha, zorder=5)
 
     fig.suptitle("個別ショック ― 似た決算群（近傍）の反応から大きく外れた銘柄",
                  y=0.96)

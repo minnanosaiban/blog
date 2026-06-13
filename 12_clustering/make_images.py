@@ -27,7 +27,7 @@ FC = ["net_sales_yoy", "operating_yoy", "pretax_yoy", "net_income_yoy",
       "comprehensive_yoy", "div_growth_pct", "op_margin", "net_margin",
       "segment_count", "max_seg_share"]
 JP = ["売上YoY", "営利YoY", "税引前YoY", "純利YoY", "包括YoY",
-      "配当成長", "営業利益率", "純利益率", "ｾｸﾞﾒﾝﾄ数", "主力依存度"]
+      "配当成長", "営業利益率", "純利益率", "セグメント数", "主力依存度"]
 ORDER = ["A 急回復・高成長", "B 高収益・集中", "C 平均・安定"]
 COLORS = {"A 急回復・高成長": "#E26A2C", "B 高収益・集中": "#A23B72", "C 平均・安定": "#6FA8D6"}
 

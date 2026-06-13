@@ -26,7 +26,7 @@ FIG_W = bs.FIG_W
 JP = {
     "net_sales_yoy": "売上YoY", "operating_yoy": "営利YoY", "pretax_yoy": "税引前YoY",
     "net_income_yoy": "純利YoY", "comprehensive_yoy": "包括YoY", "div_growth_pct": "配当成長",
-    "op_margin": "営業利益率", "net_margin": "純利益率", "segment_count": "ｾｸﾞﾒﾝﾄ数",
+    "op_margin": "営業利益率", "net_margin": "純利益率", "segment_count": "セグメント数",
     "max_seg_share": "主力依存度",
 }
 
@@ -93,6 +93,13 @@ def image_02_importance():
     ax.set_xlabel("重要度（permutation・精度の低下幅）")
     ax.set_title("permutation 重要度（実測）― ほぼ 0", pad=12)
     ax.grid(axis="x", alpha=0.3)
+    from matplotlib.patches import Patch
+    from matplotlib.lines import Line2D
+    ax.legend(handles=[
+        Patch(color="#48A14D", label="プラス（精度に寄与）"),
+        Patch(color="#C0504D", label="マイナス（むしろノイズ）"),
+        Line2D([], [], color="#888", lw=1, label="ヒゲ＝試行間のばらつき（±1σ）"),
+    ], loc="lower right", fontsize=10, frameon=False)
 
     fig.tight_layout()
     bs.savefig_uniform(fig, OUT_DIR / "02_importance.png")

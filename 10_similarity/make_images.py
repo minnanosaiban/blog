@@ -63,11 +63,11 @@ def image_01_pipeline():
         x2 = steps[i + 1][0]
         _arrow(ax, x1, 2.5, x2, 2.5)
 
-    ax.text(6.5, 4.75, "連載15: 数値特徴量ベクトル + コサイン類似度で「似た決算」を発見",
+    ax.text(6.5, 4.75, "数値特徴量ベクトル + コサイン類似度で「似た決算」を発見",
             ha="center", fontsize=24, weight="bold")
-    ax.text(6.5, 0.85, "embedding API 不要・ローカル計算で完結。連載13 CAR と join すれば「過去類似決算の値動き」が分かる",
+    ax.text(6.5, 0.85, "embedding API 不要・ローカル計算で完結。CAR（2-7）と join すれば「過去類似決算の値動き」が分かる",
             ha="center", fontsize=18, color="#555", style="italic")
-    ax.text(6.5, 0.30, "次回連載16 は本ロジックで「未来の値動き予測」フレームを構築",
+    ax.text(6.5, 0.30, "次回（3-2）は本ロジックで「個別ショックの検出」フレームを構築",
             ha="center", fontsize=16, color="#666")
     fig.tight_layout()
     bs.savefig_uniform(fig, OUT_DIR / "01_pipeline.png")
@@ -203,10 +203,10 @@ def image_05_numeric_vs_embedding():
         ax.text(0.7, 4.2 - i * 0.45, b, fontsize=11, color="#222")
 
     # Right: LLM embedding
-    _box(ax, 6.8, 4.6, 5.7, 1.0, "LLM embedding（次回以降）", color="#E26A2C", fontsize=13)
+    _box(ax, 6.8, 4.6, 5.7, 1.0, "LLM embedding（発展・本連載では未使用）", color="#E26A2C", fontsize=13)
     bullets_r = [
         "・ 1,536〜3,072 次元（OpenAI text-embedding-3）",
-        "・ 連載14 LLM 要約 → embedding に変換",
+        "・ 決算の LLM 要約テキスト → embedding に変換",
         "・ 計算コスト: 1 銘柄 ¥0.02〜0.10（OpenAI 公開価格）",
         "・ 解釈性: 低（次元の意味が分からない）",
         "・ 利点: 質的トピック（経営課題・戦略）も捕捉",
