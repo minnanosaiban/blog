@@ -214,9 +214,7 @@ def image_05_strategy_flow():
 
 def main():
     image_01_pipeline()
-    image_02_pred_vs_actual()
     image_03_shocks_table()
-    image_05_strategy_flow()
     print(f"\nAll saved to: {OUT_DIR}")
 
 

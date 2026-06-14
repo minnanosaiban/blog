@@ -444,8 +444,6 @@ if __name__ == "__main__":
     dfg = compute_yoy_growth(by_code)
     print(f"[compute] YoY 成長率計算可能セグメント: {len(dfg)}")
 
-    make_segment_coverage(by_code)
-    print("[ok] 01_segment_coverage.png")
     make_yoy_acceleration(dfg, names_short)
     print("[ok] 03_segment_yoy_acceleration.png")
     make_high_margin_segments(dfg, names_short)

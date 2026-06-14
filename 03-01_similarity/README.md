@@ -9,7 +9,7 @@
 | ファイル | 種別 | 内容 |
 |---|---|---|
 | `analysis.py` | 分析 | 決算 JSON → 10 次元特徴量抽出・z-score 正規化・コサイン類似度・2026/3 期 ad-hoc CAR |
-| `make_images.py` | チャート生成 | 記事用 PNG（パイプライン図・PCA 投影・類似 Top-15・CAR 分布・数値 vs LLM 比較） |
+| `make_images.py` | チャート生成 | 記事用 PNG（パイプライン図・PCA 投影・類似 Top-15・CAR 分布） |
 | `thumb.py` | サムネイル生成 | 記事サムネ（00_thumbnail.png） |
 | `_blog_style.py` | 共通スタイル | matplotlib の rcParams と一定幅保存 |
 

@@ -50,7 +50,7 @@ def image_01_pipeline():
     fig, ax = plt.subplots(figsize=(FIG_W, 5.4))
     ax.set_xlim(0, 13); ax.set_ylim(0, 5.4); ax.axis("off")
     steps = [
-        (0.3, 1.7, 2.2, 1.6, "1. 決算 JSON\n（連載08\nスキーマ）", "#6FA8D6"),
+        (0.3, 1.7, 2.2, 1.6, "1. 決算 JSON\n（1-3\nスキーマ）", "#6FA8D6"),
         (2.9, 1.7, 2.2, 1.6, "2. 特徴量\n抽出\n（10 次元）", "#2E86AB"),
         (5.5, 1.7, 2.2, 1.6, "3. z-score\n正規化", "#E26A2C"),
         (8.1, 1.7, 2.2, 1.6, "4. cosine\n類似度", "#A23B72"),
@@ -65,7 +65,7 @@ def image_01_pipeline():
 
     ax.text(6.5, 4.75, "数値特徴量ベクトル + コサイン類似度で「似た決算」を発見",
             ha="center", fontsize=24, weight="bold")
-    ax.text(6.5, 0.85, "embedding API 不要・ローカル計算で完結。CAR（2-7）と join すれば「過去類似決算の値動き」が分かる",
+    ax.text(6.5, 0.85, "CAR（2-7）と join すれば「過去類似決算の値動き」が分かる",
             ha="center", fontsize=18, color="#555", style="italic")
     ax.text(6.5, 0.30, "次回（3-2）は本ロジックで「個別ショックの検出」フレームを構築",
             ha="center", fontsize=16, color="#666")
@@ -183,55 +183,10 @@ def image_03_top15_table():
     print("saved 03_top15_marubeni.png")
 
 
-def image_05_numeric_vs_embedding():
-    """数値特徴量 vs LLM embedding の対比図。"""
-    fig, ax = plt.subplots(figsize=(FIG_W, 6.5))
-    ax.set_xlim(0, 13); ax.set_ylim(0, 6.5); ax.axis("off")
-    ax.text(6.5, 6.1, "数値特徴量 vs LLM embedding ― 用途別の使い分け",
-            ha="center", fontsize=14, weight="bold")
-
-    # Left: 数値特徴量
-    _box(ax, 0.5, 4.6, 5.7, 1.0, "数値特徴量（本記事）", color="#2E86AB", fontsize=13)
-    bullets_l = [
-        "・ 10 次元（売上 YoY / 配当 / セグメント等）",
-        "・ embedding API 不要・ローカル計算で完結",
-        "・ 計算コスト: 0 円 / 1,000 銘柄 0.1 秒",
-        "・ 解釈性: 高（次元名で説明可能）",
-        "・ 限界: 数値化できないニュアンスは捕捉不可",
-    ]
-    for i, b in enumerate(bullets_l):
-        ax.text(0.7, 4.2 - i * 0.45, b, fontsize=11, color="#222")
-
-    # Right: LLM embedding
-    _box(ax, 6.8, 4.6, 5.7, 1.0, "LLM embedding（発展・本連載では未使用）", color="#E26A2C", fontsize=13)
-    bullets_r = [
-        "・ 1,536〜3,072 次元（OpenAI text-embedding-3）",
-        "・ 決算の LLM 要約テキスト → embedding に変換",
-        "・ 計算コスト: 1 銘柄 ¥0.02〜0.10（OpenAI 公開価格）",
-        "・ 解釈性: 低（次元の意味が分からない）",
-        "・ 利点: 質的トピック（経営課題・戦略）も捕捉",
-    ]
-    for i, b in enumerate(bullets_r):
-        ax.text(7.0, 4.2 - i * 0.45, b, fontsize=11, color="#222")
-
-    # Bottom: 統合戦略
-    ax.text(6.5, 1.5, "▼ 推奨アプローチ：両者をハイブリッドで使う ▼",
-            ha="center", fontsize=12, weight="bold", color="#555")
-    _box(ax, 0.5, 0.2, 12.0, 0.9,
-         "1次フィルタ: 数値特徴量で高速に Top-50 を絞り込む → 2次精密化: LLM embedding で Top-10 に絞る",
-         color="#A23B72", fontsize=12)
-
-    fig.tight_layout()
-    bs.savefig_uniform(fig, OUT_DIR / "05_numeric_vs_embedding.png")
-    plt.close(fig)
-    print("saved 05_numeric_vs_embedding.png")
-
-
 def main():
     image_01_pipeline()
     image_02_feature_space()
     image_03_top15_table()
-    image_05_numeric_vs_embedding()
     print(f"\nAll saved to: {OUT_DIR}")
 
 
