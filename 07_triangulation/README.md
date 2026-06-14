@@ -1,8 +1,8 @@
-# 連載07: 三角検証
+# 連載 2-4: コンセンサス予想を検証
 
 進捗率 Z-score・アクルーアル・マルチファクターの3指標を組み合わせて銘柄の信頼性を多角的に検証するツールです。
 
-連載記事: [三角検証で「複数シグナルが一致した銘柄」を絞り込む](https://minnanosaiban.github.io/hotline/blog/2026/05/21/07_triangulation/)
+連載記事: [コンセンサス予想を検証 ― 会社予想とのズレから「修正の向き」を読む](https://minnanosaiban.github.io/hotline/blog/posts/07_triangulation/)
 
 ## ファイル
 

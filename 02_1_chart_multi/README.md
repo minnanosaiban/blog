@@ -1,6 +1,6 @@
-# 連載チャート02-1: 複数銘柄チャート比較
+# 連載 1-2: 決算データを無料で集める（複数銘柄チャート比較）
 
-連載記事: [株価以外も取得しよう ― EDINET・TDnet・証券会社のアプリを活用](https://minnanosaiban.github.io/hotline/blog/2026/05/19/02_collect_other_data/)
+連載記事: [決算データを無料で集める ― EDINET・TDnet の公式 XBRL を活用](https://minnanosaiban.github.io/hotline/blog/posts/02_collect_other_data/)
 
 複数銘柄を4列カードグリッドで並べて比較する Streamlit アプリです。  
 各カードに90日エリアチャート・RSI・25MA乖離率・PER / PBR / 配当利回りを表示します。

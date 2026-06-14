@@ -1,8 +1,8 @@
-# 連載09: CAR イベントスタディ
+# 連載 2-7: CARで見る「決算の効き」
 
 決算発表前後の累積超過リターン（CAR）を分析し、株価が織り込むパターンを定量評価するツールです。
 
-連載記事: [CAR イベントスタディで「決算株価の織り込み」を定量分析する](https://minnanosaiban.github.io/hotline/blog/2026/05/21/09_car_event_study/)
+連載記事: [CARで見る「決算の効き」 ― 元売・商社 主要5社の市場反応を検証](https://minnanosaiban.github.io/hotline/blog/posts/09b_narrative_car/)
 
 ## ファイル
 

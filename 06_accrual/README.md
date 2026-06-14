@@ -1,8 +1,8 @@
-# 連載06: アクルーアル分析
+# 連載 2-3: アクルーアル分析
 
 営業キャッシュフローと純利益の乖離から「利益の質」を評価するアクルーアル分析ツールです。
 
-連載記事: [アクルーアル分析で「利益の質」を見極める](https://minnanosaiban.github.io/hotline/blog/2026/05/21/06_accrual_analysis/)
+連載記事: [アクルーアル分析 ― ＥＮＥＯＳの最高益に「現金の裏付け」はあるか](https://minnanosaiban.github.io/hotline/blog/posts/06_accrual_analysis/)
 
 ## ファイル
 

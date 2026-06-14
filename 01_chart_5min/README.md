@@ -1,6 +1,6 @@
-# 連載チャート01: 5分足チャート
+# 連載 1-1: まず、「株価」を取得する
 
-連載記事: [まずは株価を取得しよう ― yfinance から parquet 保存、そしてチャートへ](https://minnanosaiban.github.io/hotline/blog/2026/05/18/01_get_stock_prices/)
+連載記事: [まず、「株価」を取得する ― yfinance から parquet 保存、チャート、自作アプリまで](https://minnanosaiban.github.io/hotline/blog/posts/01_get_stock_prices/)
 
 複数銘柄の5分足ローソクチャートと騰落率テーブルを並べて表示する Streamlit アプリです。
 

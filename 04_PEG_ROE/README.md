@@ -1,8 +1,8 @@
-# 連載01: GARP スクリーナー
+# 連載 2-1: 4象限で GARP を見る
 
 PEG × ROE で「成長と割安の両立」を発掘する GARP（Growth At a Reasonable Price）スクリーナーです。
 
-連載記事: [PEG × ROE で「成長と割安の両立銘柄」を発掘する ― GARP の理論と実践](https://minnanosaiban.github.io/hotline/blog/2026/05/20/01_garp_peg_roe/)
+連載記事: [4象限で GARP を見る ― 「成長と割安の両立」銘柄を探す](https://minnanosaiban.github.io/hotline/blog/posts/04_garp_peg_roe/)
 
 ## ファイル
 
@@ -43,7 +43,7 @@ python 04_PEG_ROE_make_images.py
 
 ## しきい値
 
-GARP の理想ゾーンを `PEG ≤ 1.0 AND ROE ≥ 10%` で固定しています（連載01 記事と統一）。
+GARP の理想ゾーンを `PEG ≤ 1.0 AND ROE ≥ 10%` で固定しています（連載 2-1 記事と統一）。
 
 ## ライセンス / 免責
 

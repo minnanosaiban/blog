@@ -1,8 +1,8 @@
-# 連載 3-4: ランダムフォレスト（予測の限界と重要度の罠）
+# 連載 3-4: ランダムフォレスト
 
 ランダムフォレストで決算 10 指標から CAR の方向（上 / 下）を予測し、**精度は多数派ベースライン未満**（＝当たらない）こと、そして **impurity 重要度と permutation 重要度が食い違う「重要度の罠」** を実証するツールです。
 
-連載記事: [ランダムフォレストで「決算指標の効き」を検証する](https://minnanosaiban.github.io/hotline/blog/posts/13_random_forest/)
+連載記事: [ランダムフォレスト ― 予測は失敗、「特徴量重要度」の落とし穴を学ぶ](https://minnanosaiban.github.io/hotline/blog/posts/13_random_forest/)
 
 ## ファイル
 

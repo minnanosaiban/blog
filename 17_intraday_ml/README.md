@@ -1,8 +1,8 @@
-# 番外編 B: LightGBM で「次の 5 分」を分類
+# 番外編 EX-2: LightGBM で「次の5分」を当てられるか
 
 5 分足の次バー方向（上 / 下）を LightGBM で分類し、AUC・的中率に加えて「確信度上位だけ取引した場合のコスト控除後損益」で評価するツールです。
 
-連載記事: [LightGBM で「次の 5 分」を当てられるか試す ― 111 万バーで検証](https://minnanosaiban.github.io/hotline/blog/posts/17_intraday_ml/)
+連載記事: [LightGBM で「次の5分」を当てられるか ― 111万バーで検証](https://minnanosaiban.github.io/hotline/blog/posts/17_intraday_ml/)
 
 ## ファイル
 
@@ -17,7 +17,7 @@
 
 - ラベルは「次の 5 分バーの上下」の 2 値分類。学習 111 万バー（〜2026-03-31）→ 検証 51 万バー（2026-04-01〜、境界 1 日はパージ）
 - 評価は AUC・的中率に加え、**確信度トップ/ボトム 10% を取引した場合の 1 回あたり損益（コスト 5〜10bps 控除）** を主役にする
-- 番外編 A（`16_intraday_stats`）が生成する 5 分足キャッシュ（`data/blog20/close_wide.parquet` 等）を再利用する
+- 番外編 EX-1（`16_intraday_stats`）が生成する 5 分足キャッシュ（`data/blog20/close_wide.parquet` 等）を再利用する
 
 ## データについて
 

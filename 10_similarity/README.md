@@ -1,8 +1,8 @@
-# 連載 3-1: 類似決算検索
+# 連載 3-1: コサイン類似度
 
 10 次元の数値特徴量とコサイン類似度で「似た決算」を検索し、類似群の CAR とクエリ銘柄自身の CAR の乖離から「個別ショック」を発見するツールです。
 
-連載記事: [数値特徴量で「類似決算」を検索する](https://minnanosaiban.github.io/hotline/blog/posts/10_similar_earnings_search/)
+連載記事: [コサイン類似度 ― 「似ている決算」を数値で検索する](https://minnanosaiban.github.io/hotline/blog/posts/10_similar_earnings_search/)
 
 ## ファイル
 

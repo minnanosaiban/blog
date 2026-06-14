@@ -1,8 +1,8 @@
-# 連載 3-3: 決算クラスタリング
+# 連載 3-3: K-means クラスタリング
 
 k-means（教師なし学習）で決算 10 指標から「決算の型」を発見するツールです。シルエット係数で K=3 を選び、287 銘柄を「急回復・高成長／高収益・集中／平均・安定」の 3 型に分類します。
 
-連載記事: [クラスタリングで「決算の型」を発見する](https://minnanosaiban.github.io/hotline/blog/posts/12_earnings_clustering/)
+連載記事: [K-means クラスタリング ― 教師なし学習が分けた「決算の型」](https://minnanosaiban.github.io/hotline/blog/posts/12_earnings_clustering/)
 
 ## ファイル
 

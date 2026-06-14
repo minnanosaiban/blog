@@ -1,8 +1,8 @@
-# 連載08: セグメント発進力
+# 連載 2-5: セグメント分析
 
 有報の事業セグメント別データから「どの事業が業績を牽引しているか」を可視化する分析ツールです。
 
-連載記事: [セグメント発進力で「業績を牽引するセグメント」を見つける](https://minnanosaiban.github.io/hotline/blog/2026/05/21/08_segment_analysis/)
+連載記事: [セグメント分析 ― 連結に埋もれた「強い事業」を発進力スコアで探す](https://minnanosaiban.github.io/hotline/blog/posts/08_segment_analysis/)
 
 ## ファイル
 

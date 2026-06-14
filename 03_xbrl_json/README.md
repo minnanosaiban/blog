@@ -1,6 +1,6 @@
-# 連載03: XBRL → JSON 変換と決算プロンプト生成
+# 連載 1-3: 決算 XBRL を JSON に変換
 
-連載記事: [XBRL を JSON に変換して分析する ― 既存サービスにない切り口を作る](https://minnanosaiban.github.io/hotline/blog/2026/05/20/03_xbrl_to_json/)
+連載記事: [決算 XBRL を JSON に変換 ― 「決算そのもの」を分析、元売3社を比較](https://minnanosaiban.github.io/hotline/blog/posts/03_xbrl_to_json/)
 
 XBRL（決算短信・有報）を統一 JSON に変換し、銘柄コードを指定するだけで Note 記事の下書きプロンプトを生成する Streamlit アプリです。
 
@@ -35,7 +35,7 @@ streamlit run app.py
 3. 銘柄コードを入力し、着目点を一言メモ → プロンプトを生成
 4. Claude などの AI に貼り付けて下書きを作成
 
-`fetch_tdnet.py` は決算発表日時を `earnings.csv`（date, time, code）に出力する独立スクリプトです（連載02 の決算パターン分析などで使用。アプリ本体の動作には不要）。
+`fetch_tdnet.py` は決算発表日時を `earnings.csv`（date, time, code）に出力する独立スクリプトです（連載 1-2 の決算パターン分析などで使用。アプリ本体の動作には不要）。
 
 ```bash
 python fetch_tdnet.py --start-date 2026-05-01 --end-date 2026-05-31

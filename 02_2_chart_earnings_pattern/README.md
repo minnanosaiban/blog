@@ -1,6 +1,6 @@
-# 連載チャート02-2: 決算パターングリッド
+# 連載 1-2: 決算データを無料で集める（決算パターングリッド）
 
-連載記事: [株価以外も取得しよう ― EDINET・TDnet・証券会社のアプリを活用](https://minnanosaiban.github.io/hotline/blog/2026/05/19/02_collect_other_data/)
+連載記事: [決算データを無料で集める ― EDINET・TDnet の公式 XBRL を活用](https://minnanosaiban.github.io/hotline/blog/posts/02_collect_other_data/)
 
 決算発表後の値動きを「上げ / 逆V字 / 無風 / V字 / 下げ」の5パターンに分類し、  
 4列カードグリッドで表示する Streamlit アプリです。  
