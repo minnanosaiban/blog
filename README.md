@@ -11,7 +11,7 @@
 | 1-1 | [まず、「株価」を取得する](https://minnanosaiban.github.io/hotline/blog/posts/01-01_get_stock_prices/) | [`01-01_chart_5min/`](./01-01_chart_5min/) | アプリ | 5分足ローソク＋騰落率テーブル |
 | 1-2 | [決算データを無料で集める](https://minnanosaiban.github.io/hotline/blog/posts/01-02_collect_other_data/) | [`01-02_1_chart_multi/`](./01-02_1_chart_multi/) | アプリ | 複数銘柄カードグリッド（90日チャート＋PER/PBR/配当） |
 | 1-2 | 〃 | [`01-02_2_chart_earnings_pattern/`](./01-02_2_chart_earnings_pattern/) | アプリ | 決算パターングリッド（発表後の値動きを5分類） |
-| 1-3 | [決算 XBRL を JSON に変換](https://minnanosaiban.github.io/hotline/blog/posts/01-03_xbrl_to_json/) | [`01-03_xbrl_json/`](./01-03_xbrl_json/) | アプリ＋図 | XBRL → JSON 変換 ＋ 記事プロンプト生成 |
+| 1-3 | [決算 XBRL を JSON に変換](https://minnanosaiban.github.io/hotline/blog/posts/01-03_xbrl_to_json/) | [`01-03_xbrl_json/`](./01-03_xbrl_json/) | アプリ＋図 | XBRL → JSON 変換 ＋ CFマトリクス比較 |
 | 2-1 | [4象限で GARP を見る](https://minnanosaiban.github.io/hotline/blog/posts/02-01_garp_peg_roe/) | [`02-01_PEG_ROE/`](./02-01_PEG_ROE/) | アプリ＋図 | PEG × ROE GARP スクリーナー |
 | 2-2 | [マルチファクタースコア](https://minnanosaiban.github.io/hotline/blog/posts/02-02_multifactor_scoreboard/) | [`02-02_multifactor/`](./02-02_multifactor/) | アプリ＋図 | マルチファクター・スコアボード |
 | 2-3 | [アクルーアル分析](https://minnanosaiban.github.io/hotline/blog/posts/02-03_accrual_analysis/) | [`02-03_accrual/`](./02-03_accrual/) | 図 | 利益の質（アクルーアル）分析 |
@@ -28,6 +28,7 @@
 | 3-6 | [PCA 異常検知](https://minnanosaiban.github.io/hotline/blog/posts/03-06_price_anomaly/) | [`03-06_price_anomaly/`](./03-06_price_anomaly/) | 図 | PCA による共動崩壊の異常検知 |
 | EX-1 | [超短期の統計検証](https://minnanosaiban.github.io/hotline/blog/posts/EX-01_intraday_stats/) | [`EX-01_intraday_stats/`](./EX-01_intraday_stats/) | 分析＋図 | 5分足での超短期アノマリーの統計検証 |
 | EX-2 | [超短期の ML 検証](https://minnanosaiban.github.io/hotline/blog/posts/EX-02_intraday_ml/) | [`EX-02_intraday_ml/`](./EX-02_intraday_ml/) | 分析＋図 | 5分足での超短期予測の機械学習検証 |
+| EX-3 | [決算データで Note 記事の下書きを作る](https://minnanosaiban.github.io/hotline/blog/posts/EX-03_kessan_note_app/) | [`EX-03_kessan_note_app/`](./EX-03_kessan_note_app/) | アプリ | 決算 JSON から Note 記事プロンプトを生成 |
 
 > **種別について** ― 初期の連載（1-1〜2-2）は `app.py` で動く Streamlit アプリ、2-3 以降は記事の図表を再生成するスクリプト（`*_make_images.py` / `analysis.py` / `thumb.py`）です。
 
