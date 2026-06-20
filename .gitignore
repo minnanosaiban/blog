@@ -25,8 +25,7 @@ venv/
 **/data/**/*.xsd
 **/data/**/*.txt
 
-# stocs.csv は著者作成のため再配布可
-!**/data/master/stocks.csv
+# stocks.csv（銘柄短縮名リスト）は提供元データのため同梱しない（上の **/data/**/*.csv の除外に従う）
 
 # TDnet 適時開示データ（data/ 配下以外に置かれるケース）
 **/earnings.csv

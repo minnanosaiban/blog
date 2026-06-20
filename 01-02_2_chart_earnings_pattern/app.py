@@ -82,8 +82,12 @@ def get_name(code: str) -> str:
     row = master[master["コード"] == str(code)]
     if row.empty:
         return code
-    val = row.iloc[0].get("銘柄", None)
-    return str(val) if val else code
+    r = row.iloc[0]
+    for col in ("銘柄", "銘柄名"):
+        val = r.get(col, None)
+        if pd.notna(val) and val:
+            return str(val)
+    return code
 
 
 @st.cache_data(ttl=3600, show_spinner=False)

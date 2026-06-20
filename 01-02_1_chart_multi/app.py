@@ -120,9 +120,11 @@ def get_name(code: str, metrics: pd.DataFrame | None) -> str:
     if not master.empty:
         row = master[master["コード"] == str(code).zfill(4)]
         if not row.empty:
-            val = row.iloc[0].get("銘柄", None)
-            if val:
-                return str(val)
+            r = row.iloc[0]
+            for col in ("銘柄", "銘柄名"):
+                val = r.get(col, None)
+                if pd.notna(val) and val:
+                    return str(val)
     return code
 
 
