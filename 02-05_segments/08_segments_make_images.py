@@ -66,6 +66,9 @@ _savefig_vpad = bs.savefig_uniform   # 横幅も統一して保存（共通モ�
 STMTS = Path(r"C:/stock_analysis/data/statements")
 YUHO  = Path(r"C:/stock_analysis/data/yuho")
 
+# 連載は 2026-05-31 時点で収集できたデータで固定。別の基準日で作り直すにはこの値を変更する。
+AS_OF = "2026-05-31"
+
 
 def get_segment_value(s: dict, keys: list[str]) -> float | None:
     """セグメント dict から複数候補キーで値を取り出す。"""
@@ -89,6 +92,9 @@ def load_segment_timeseries() -> tuple[dict[str, dict[str, list]], dict[str, str
         except Exception:
             continue
         meta = d.get("metadata", {})
+        _fd = meta.get("filing_date")
+        if _fd and str(_fd) > AS_OF:
+            continue
         code = meta.get("code")
         if not code:
             continue
@@ -315,7 +321,14 @@ def make_eneos_peakout(by_code: dict) -> None:
     """
     code = "5020"
     # 直接 JSON から current / prior を取得（by_code は 1 期分しか無いため）
-    cands = list(STMTS.glob(f"{code}_*_FY.json"))
+    cands = []
+    for p in STMTS.glob(f"{code}_*_FY.json"):
+        try:
+            _fd = (json.load(open(p, encoding="utf-8")).get("metadata") or {}).get("filing_date")
+        except Exception:
+            continue
+        if _fd and str(_fd) <= AS_OF:
+            cands.append(p)
     if not cands:
         return
     latest = max(cands, key=lambda p: p.stem)

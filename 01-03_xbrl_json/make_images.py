@@ -42,6 +42,9 @@ _savefig_vpad = bs.savefig_uniform   # 横幅も統一して保存（共通モ�
 
 YUHO = Path(r"C:/stock_analysis/data/yuho")
 
+# 連載は 2026-05-31 時点で収集できたデータで固定。別の基準日で作り直すにはこの値を変更する。
+AS_OF = "2026-05-31"
+
 OIL_3 = [
     ("E31632", "コスモエネＨＤ", "#5a9a72"),  # 緑（CFチャートと共通）
     ("E24050", "ＥＮＥＯＳ",      "#3498db"),  # 青
@@ -55,6 +58,9 @@ def load_oil_series() -> pd.DataFrame:
         for f in sorted((YUHO / ed).glob("*.json")):
             with open(f, encoding="utf-8") as fp:
                 d = json.load(fp)
+            _fd = d.get("metadata", {}).get("filing_date")
+            if _fd and str(_fd) > AS_OF:
+                continue
             fy = d.get("metadata", {}).get("fiscal_year_end", "")
             fin = d.get("financials", {}) or {}
             rows.append({

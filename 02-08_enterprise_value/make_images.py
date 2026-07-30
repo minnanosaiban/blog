@@ -49,6 +49,9 @@ STMTS  = ROOT / "data" / "statements"
 PRICES = ROOT / "data" / "prices" / "stocks" / "daily"
 SPLITS = ROOT / "data" / "master" / "stock_splits.csv"
 
+# 連載は 2026-05-31 時点のデータで固定。別の基準日で作り直すにはこの値を変更する。
+AS_OF = "2026-05-31"
+
 OUT_DIR = Path(r"C:/minnanosaiban/hotline/docs/blog/posts/img/18_enterprise_value")
 OUT_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -100,6 +103,9 @@ def _yuho_years(edinet: str) -> list[dict]:
     out = []
     for f in sorted((YUHO / edinet).glob(f"{edinet}_*.json")):
         d = json.loads(f.read_text(encoding="utf-8"))
+        _fd = d.get("metadata", {}).get("filing_date")
+        if _fd and str(_fd) > AS_OF:
+            continue
         out.append({"fy_end": d["metadata"]["fiscal_year_end"],
                     "std": d["metadata"]["accounting_standard"],
                     "fin": d.get("financials", {}) or {}})
@@ -126,6 +132,7 @@ def _shares_now(code: str, latest: dict, splits: dict[str, float]) -> tuple[floa
 
 def _price_latest(code: str) -> tuple[float, str]:
     sp = pd.read_parquet(PRICES / f"{code}.parquet", columns=["Close"])
+    sp = sp[pd.to_datetime(sp.index) <= pd.Timestamp(AS_OF)]
     return float(sp["Close"].iloc[-1]), str(sp.index[-1])[:10]
 
 

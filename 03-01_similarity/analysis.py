@@ -24,6 +24,10 @@ EVENTS = ROOT / "data" / "blog13" / "events.parquet"
 OUT_DIR = ROOT / "data" / "blog15"
 OUT_DIR.mkdir(parents=True, exist_ok=True)
 
+# 連載は 2026-05-31 時点で収集できたデータで固定（CARの一部の窓は未完了のまま）。
+# 別の基準日で作り直すにはこの値を変更する。
+AS_OF = "2026-05-31"
+
 FEATURE_COLS = [
     "net_sales_yoy",      # 売上 YoY %
     "operating_yoy",      # 営業利益 YoY %
@@ -98,6 +102,9 @@ def load_features() -> pd.DataFrame:
         try:
             d = json.load(open(f, encoding="utf-8"))
         except Exception:
+            continue
+        _fd = (d.get("metadata") or {}).get("filing_date")
+        if _fd and str(_fd) > AS_OF:
             continue
         feat = extract_features(d)
         if feat:
@@ -200,6 +207,7 @@ def main():
     # Load TOPIX
     topix = pd.read_parquet(macro_dir / "TOPIX.parquet")
     topix.index = pd.to_datetime(topix.index)
+    topix = topix[topix.index <= pd.Timestamp(AS_OF)]
     trading_days = topix.index.normalize().drop_duplicates().sort_values()
 
     # Load 2026-04, 2026-05 TDnet 決算短信ログ
@@ -217,6 +225,7 @@ def main():
             tdnet_rows.append(df_t)
     if tdnet_rows:
         tdnet_kessan = pd.concat(tdnet_rows, ignore_index=True)
+        tdnet_kessan = tdnet_kessan[tdnet_kessan["date"] <= pd.Timestamp(AS_OF).date()]
     else:
         tdnet_kessan = pd.DataFrame()
     print(f"  tdnet 2026-04~05 kessan rows: {len(tdnet_kessan)}")
@@ -243,6 +252,7 @@ def main():
         if not f.exists(): return None
         sd = pd.read_parquet(f)
         sd.index = pd.to_datetime(sd.index)
+        sd = sd[sd.index <= pd.Timestamp(AS_OF)]
         if "ret_pct" not in sd.columns:
             sd["ret_pct"] = sd["Close"].pct_change() * 100
         merged = sd[["ret_pct"]].join(topix["chg_pct"].rename("topix_pct"), how="inner")

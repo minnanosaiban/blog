@@ -43,6 +43,9 @@ IMG = Path("C:/minnanosaiban/hotline/docs/blog/posts/img/14_price_clustering")
 DATA_OUT.mkdir(parents=True, exist_ok=True)
 IMG.mkdir(parents=True, exist_ok=True)
 
+# 連載は 2026-05-31 時点のデータで固定。別の基準日で作り直すにはこの値を変更する。
+AS_OF = "2026-05-31"
+
 WINDOW = 500
 MIN_COVER = 0.95
 NEAR_RHO = 0.90
@@ -110,7 +113,8 @@ def build_returns(codes):
             closes[c] = pd.read_parquet(DAILY / f"{c}.parquet")["Close"].astype(float)
         except Exception:
             continue
-    px = pd.DataFrame(closes).sort_index().tail(WINDOW)
+    px = pd.DataFrame(closes).sort_index()
+    px = px[pd.to_datetime(px.index) <= pd.Timestamp(AS_OF)].tail(WINDOW)
     cover = px.notna().mean()
     px = px.loc[:, cover[cover >= MIN_COVER].index]
     return np.log(px).diff().iloc[1:].ffill().fillna(0.0)

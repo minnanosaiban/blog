@@ -31,6 +31,9 @@ from utils.price_refresh import refresh_with_yfinance
 from utils.master_names import apply_master_names, load_price_targets_names
 from utils.universe_topix500 import filter_to_topix500, topix_large100_codes
 
+# 連載は 2026-05-31 時点のデータで固定。別の基準日で作り直すにはこの値を変更する。
+AS_OF = "2026-05-31"
+
 
 # ── デザイン設定 ────────────────────────────────────────────────────────────
 bs.apply_rcparams()
@@ -465,6 +468,7 @@ def load_close(code: str, months: int = 6) -> pd.Series:
         return pd.Series(dtype="float64")
     df = pd.read_parquet(p, columns=["Close"])
     df.index = pd.to_datetime(df.index)
+    df = df[df.index <= pd.Timestamp(AS_OF)]
     cutoff = df.index[-1] - pd.DateOffset(months=months)
     return df.loc[df.index >= cutoff, "Close"].dropna()
 

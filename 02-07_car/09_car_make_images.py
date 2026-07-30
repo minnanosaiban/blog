@@ -52,12 +52,17 @@ STMTS  = Path(r"C:/stock_analysis/data/statements")
 PRICES = Path(r"C:/stock_analysis/data/prices/stocks/daily")
 MACRO  = Path(r"C:/stock_analysis/data/prices/macro/daily")
 
+# 連載は 2026-05-31 時点で収集できたデータで固定（CARの一部の窓は未完了のまま）。
+# 別の基準日で作り直すにはこの値を変更する。
+AS_OF = "2026-05-31"
+
 
 def load_car_dataset() -> pd.DataFrame:
     """決算 actual FY × actual_secondary 前期 × yfinance × N225 で CAR を計算。"""
     n225 = pd.read_parquet(MACRO / "N225.parquet", columns=["Close"]).reset_index()
     n225.columns = ["date", "n225_close"]
     n225["date"] = pd.to_datetime(n225["date"])
+    n225 = n225[n225["date"] <= pd.Timestamp(AS_OF)]
 
     rows = []
     for f in STMTS.glob("*_FY.json"):
@@ -80,6 +85,7 @@ def load_car_dataset() -> pd.DataFrame:
     df = pd.DataFrame(rows).dropna(subset=["code", "filing_date", "net_income"])
     df["filing_date"] = pd.to_datetime(df["filing_date"], errors="coerce")
     df = df.dropna(subset=["filing_date"])
+    df = df[df["filing_date"] <= pd.Timestamp(AS_OF)]
 
     rows2 = []
     for f in STMTS.glob("*_FY.json"):
@@ -119,6 +125,7 @@ def load_car_dataset() -> pd.DataFrame:
             continue
         sp.columns = ["date", "close"]
         sp["date"] = pd.to_datetime(sp["date"])
+        sp = sp[sp["date"] <= pd.Timestamp(AS_OF)]
         after = sp[sp["date"] > r["filing_date"]].head(32)
         if len(after) < 6:
             continue

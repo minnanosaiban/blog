@@ -47,6 +47,9 @@ _savefig_vpad = bs.savefig_uniform   # 横幅も統一して保存（共通モ�
 
 YUHO = Path(r"C:/stock_analysis/data/yuho")
 
+# 連載は 2026-05-31 時点で収集できたデータで固定。別の基準日で作り直すにはこの値を変更する。
+AS_OF = "2026-05-31"
+
 OIL_3 = [
     ("E31632", "コスモエネＨＤ", "#888888"),
     ("E24050", "ＥＮＥＯＳ",      "#444444"),
@@ -72,6 +75,9 @@ def load_yuho_all() -> pd.DataFrame:
             except Exception:
                 continue
             meta = d.get("metadata", {})
+            _fd = meta.get("filing_date")
+            if _fd and str(_fd) > AS_OF:
+                continue
             fin = d.get("financials", {}) or {}
             rows.append({
                 "edinet": ed,

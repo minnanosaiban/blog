@@ -29,6 +29,9 @@ from utils.universe_topix500 import filter_to_topix500, topix_large100_codes
 from utils.price_metrics import compute_price_metrics
 from utils.master_names import apply_master_names, load_price_targets_names
 
+# 連載は 2026-05-31 時点のデータで固定。別の基準日で作り直すにはこの値を変更する。
+AS_OF = "2026-05-31"
+
 
 # ── デザイン設定 ────────────────────────────────────────────────────────────
 bs.apply_rcparams()
@@ -119,6 +122,7 @@ def load_universe() -> pd.DataFrame:
     for p in PRICES_STOCKS_DAILY.glob("*.parquet"):
         try:
             s = pd.read_parquet(p, columns=["Close"])["Close"].dropna()
+            s = s[pd.to_datetime(s.index) <= pd.Timestamp(AS_OF)]
             if not s.empty:
                 rows.append({"コード": p.stem, "Close_yf": float(s.iloc[-1])})
         except Exception:
