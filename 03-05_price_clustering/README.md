@@ -1,8 +1,8 @@
-# 分析ノート 3-5: 階層型クラスタリング
+# 記事 3-5: 階層型クラスタリング
 
 日次終値の相関から銘柄をデンドログラムでまとめ、「値動きが似た銘柄群」を業界地図として再現するツールです。予測ではなく記述・発見（3-2 / 3-4 の予測タスクとは別物）です。
 
-分析ノート記事: [階層型クラスタリング ― 値動きの相関で再現する業界地図](https://minnanosaiban.github.io/hotline/blog/posts/03-05_price_clustering/)
+記事: [階層型クラスタリング ― 値動きの相関で再現する業界地図](https://minnanosaiban.github.io/hotline/blog/posts/03-05_price_clustering/)
 
 ## ファイル
 

@@ -1,8 +1,8 @@
-# 分析ノート 2-4: コンセンサス予想を検証
+# 記事 2-4: コンセンサス予想を検証
 
 進捗率 Z-score・アクルーアル・マルチファクターの3指標を組み合わせて銘柄の信頼性を多角的に検証するツールです。
 
-分析ノート記事: [コンセンサス予想を検証 ― 会社予想とのズレから「修正の向き」を読む](https://minnanosaiban.github.io/hotline/blog/posts/02-04_triangulation/)
+記事: [コンセンサス予想を検証 ― 会社予想とのズレから「修正の向き」を読む](https://minnanosaiban.github.io/hotline/blog/posts/02-04_triangulation/)
 
 ## ファイル
 

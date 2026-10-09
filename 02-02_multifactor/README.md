@@ -1,8 +1,8 @@
-# 分析ノート 2-2: マルチファクタースコア
+# 記事 2-2: マルチファクタースコア
 
 7 ファクター（Value / Quality / Growth / Consensus / Sentiment / Momentum / Risk）でレーダーチャート採点する銘柄分析ツールです。
 
-分析ノート記事: [マルチファクタースコア ― 7軸で「全方位の優等生」を探す](https://minnanosaiban.github.io/hotline/blog/posts/02-02_multifactor_scoreboard/)
+記事: [マルチファクタースコア ― 7軸で「全方位の優等生」を探す](https://minnanosaiban.github.io/hotline/blog/posts/02-02_multifactor_scoreboard/)
 
 ## ファイル
 
@@ -47,7 +47,7 @@ streamlit run app.py
 - 各指標を **TOPIX 500 内パーセンタイルランク化（0-100）**
 - ファクター毎に指標スコアの単純平均
 - 総合スコア = 7 ファクター平均
-- **70 以上が上位 30% の注目候補**（分析ノート 2-2 記事と統一）
+- **70 以上が上位 30% の注目候補**（記事 2-2 記事と統一）
 
 ## ライセンス / 免責
 

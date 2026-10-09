@@ -1,9 +1,9 @@
 # 番外編: 決算 JSON から Note 記事プロンプトを生成
 
-分析ノート記事: [番外編：決算データで「Note記事の下書き」を作る ― XBRL→プロンプト生成アプリ](https://minnanosaiban.github.io/hotline/blog/posts/EX-03_kessan_note_app/)
+記事: [番外編：決算データで「Note記事の下書き」を作る ― XBRL→プロンプト生成アプリ](https://minnanosaiban.github.io/hotline/blog/posts/EX-03_kessan_note_app/)
 
 決算短信・有報の XBRL を統一 JSON に変換し、銘柄コードを入力するだけで **Note 記事の下書きプロンプト**を生成する Streamlit アプリです。
-データ変換のしくみは分析ノート 1-3 [決算 XBRL を JSON に変換](https://minnanosaiban.github.io/hotline/blog/posts/01-03_xbrl_to_json/) と共通です。
+データ変換のしくみは記事 1-3 [決算 XBRL を JSON に変換](https://minnanosaiban.github.io/hotline/blog/posts/01-03_xbrl_to_json/) と共通です。
 
 ![決算 Note プロンプト生成アプリ](app.png)
 
@@ -18,7 +18,7 @@
 ## セットアップ
 
 ```bash
-# このリポジトリは分析ノート全体の 1 フォルダです
+# このリポジトリは記事全体の 1 フォルダです
 git clone https://github.com/minnanosaiban/blog.git
 cd blog/EX-03_kessan_note_app
 

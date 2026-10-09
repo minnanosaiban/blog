@@ -1,5 +1,5 @@
 """
-分析ノート01: GARP スクリーナー ― PEG × ROE で「成長と割安の両立」を発掘（Streamlit + Plotly）
+記事01: GARP スクリーナー ― PEG × ROE で「成長と割安の両立」を発掘（Streamlit + Plotly）
 
 ローカル前提: C:\\stock_analysis 配下の rakunav CSV を読みに行く。
 データは利用規約により再配布しないため、各自の環境でセットアップしてください。
@@ -127,7 +127,7 @@ raw_codes = st.sidebar.text_area(
 )
 tickers = [t.strip() for t in re.split(r"[,\s\n]+", raw_codes) if t.strip()]
 
-# しきい値（分析ノート01 記事に合わせて固定）
+# しきい値（記事01 に合わせて固定）
 PEG_TH = 1.0   # PEG ≤ 1.0 が割安
 ROE_TH = 10.0  # ROE ≥ 10% が高品質
 

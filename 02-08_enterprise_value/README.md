@@ -1,8 +1,8 @@
-# 分析ノート 2-8: EVで見る「会社の値段」
+# 記事 2-8: EVで見る「会社の値段」
 
 元売3社・総合商社8社・資源2社の計13社を EV（企業価値）と簡易 DCF で分析するツールです。
 
-分析ノート記事: [EVで見る「会社の値段」 ― 元売・商社・資源 13社を簡易DCFで検証](https://minnanosaiban.github.io/hotline/blog/posts/02-08_enterprise_value/)
+記事: [EVで見る「会社の値段」 ― 元売・商社・資源 13社を簡易DCFで検証](https://minnanosaiban.github.io/hotline/blog/posts/02-08_enterprise_value/)
 
 ## ファイル
 

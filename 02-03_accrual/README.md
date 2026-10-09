@@ -1,8 +1,8 @@
-# 分析ノート 2-3: アクルーアル分析
+# 記事 2-3: アクルーアル分析
 
 営業キャッシュフローと純利益の乖離から「利益の質」を評価するアクルーアル分析ツールです。
 
-分析ノート記事: [アクルーアル分析 ― ＥＮＥＯＳの最高益に「現金の裏付け」はあるか](https://minnanosaiban.github.io/hotline/blog/posts/02-03_accrual_analysis/)
+記事: [アクルーアル分析 ― ＥＮＥＯＳの最高益に「現金の裏付け」はあるか](https://minnanosaiban.github.io/hotline/blog/posts/02-03_accrual_analysis/)
 
 ## ファイル
 

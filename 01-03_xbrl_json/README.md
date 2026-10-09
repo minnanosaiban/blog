@@ -1,10 +1,10 @@
-# 分析ノート 1-3: 決算 XBRL を JSON に変換
+# 記事 1-3: 決算 XBRL を JSON に変換
 
-分析ノート記事: [決算 XBRL を JSON に変換 ― 「決算そのもの」を分析、元売3社を比較](https://minnanosaiban.github.io/hotline/blog/posts/01-03_xbrl_to_json/)
+記事: [決算 XBRL を JSON に変換 ― 「決算そのもの」を分析、元売3社を比較](https://minnanosaiban.github.io/hotline/blog/posts/01-03_xbrl_to_json/)
 
 XBRL（決算短信・有報）を統一 JSON に変換し、それを使う **CFマトリクス比較アプリ**を収めています。
 
-- **`app_cf_matrix.py`** … CFマトリクス（営業CF × 投資CF）を複数社並べて比較（分析ノート 1-3）。EDINET 公開データだけで動く無料アプリ
+- **`app_cf_matrix.py`** … CFマトリクス（営業CF × 投資CF）を複数社並べて比較（記事 1-3）。EDINET 公開データだけで動く無料アプリ
 
 > 同じ JSON から **Note 記事の下書きプロンプトを生成する**アプリ（`app.py`）は番外編に分離しました → [`EX-03_kessan_note_app/`](../EX-03_kessan_note_app/)
 
@@ -14,7 +14,7 @@ XBRL（決算短信・有報）を統一 JSON に変換し、それを使う **C
 
 | ファイル | 種別 | 内容 |
 |---|---|---|
-| `app_cf_matrix.py` | Streamlit アプリ | CFマトリクス（営業CF × 投資CF）を複数社並べて比較（分析ノート 1-3） |
+| `app_cf_matrix.py` | Streamlit アプリ | CFマトリクス（営業CF × 投資CF）を複数社並べて比較（記事 1-3） |
 | `cf_matrix_core.py` | コア | CFマトリクスのデータ索引と Plotly 図生成（UI から分離・テスト可能） |
 | `fetch_kessan.py` | 決算短信 XBRL 取得 | TDnet から決算短信 XBRL を取得 |
 | `fetch_tdnet.py` | 決算日時取得 | TDnet から決算発表日時を取得し `earnings.csv`（date, time, code）を生成 |
@@ -24,14 +24,14 @@ XBRL（決算短信・有報）を統一 JSON に変換し、それを使う **C
 ## セットアップ
 
 ```bash
-# このリポジトリは分析ノート全体の 1 フォルダです
+# このリポジトリは記事全体の 1 フォルダです
 git clone https://github.com/minnanosaiban/blog.git
 cd blog/01-03_xbrl_json
 
 # 依存パッケージをインストール
 pip install -r requirements.txt
 
-# CFマトリクス（複数社を並べて比較・分析ノート 1-3）
+# CFマトリクス（複数社を並べて比較・記事 1-3）
 streamlit run app_cf_matrix.py
 ```
 
@@ -41,7 +41,7 @@ streamlit run app_cf_matrix.py
 2. アプリ起動時に自動で `data/json/` へ変換（下記「データの用意」の ⚠️ を必ず確認）
 3. `app_cf_matrix.py` を起動し、証券コードを入力 → 複数社の CFマトリクス（営業CF × 投資CF）を並べて比較
 
-`fetch_tdnet.py` は決算発表日時を `earnings.csv`（date, time, code）に出力する独立スクリプトです（分析ノート 1-2 の決算パターン分析などで使用。アプリ本体の動作には不要）。
+`fetch_tdnet.py` は決算発表日時を `earnings.csv`（date, time, code）に出力する独立スクリプトです（記事 1-2 の決算パターン分析などで使用。アプリ本体の動作には不要）。
 
 ```bash
 python fetch_tdnet.py --start-date 2026-05-01 --end-date 2026-05-31

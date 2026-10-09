@@ -1,12 +1,12 @@
-# 株 × Python × ML ― 分析ノートアプリ＆スクリプト集
+# 株 × Python × ML ― 記事アプリ＆スクリプト集
 
-[株 × Python × ML](https://minnanosaiban.github.io/hotline/blog/) 分析ノートで紹介した分析を、ローカルで動く Streamlit アプリ／図表生成スクリプトとして実装したものです。
+[株 × Python × ML](https://minnanosaiban.github.io/hotline/blog/) ブログ記事で紹介した分析を、ローカルで動く Streamlit アプリ／図表生成スクリプトとして実装したものです。
 
-分析ノートは **3 フェーズ＋番外編** で構成され、各フォルダの番号は分析ノートの読む順（`フェーズ-連番`、例 `01-01_…`）に対応しています。
+記事は **3 フェーズ＋番外編** で構成され、各フォルダの番号は記事の読む順（`フェーズ-連番`、例 `01-01_…`）に対応しています。
 
-## 分析ノートとの対応
+## 記事との対応
 
-| 分析ノート | 記事 | フォルダ | 種別 | 内容 |
+| 番号 | 記事 | フォルダ | 種別 | 内容 |
 |---|---|---|---|---|
 | 1-1 | [まず、「株価」を取得する](https://minnanosaiban.github.io/hotline/blog/posts/01-01_get_stock_prices/) | [`01-01_chart_5min/`](./01-01_chart_5min/) | アプリ | 5分足ローソク＋騰落率テーブル |
 | 1-2 | [決算データを無料で集める](https://minnanosaiban.github.io/hotline/blog/posts/01-02_collect_other_data/) | [`01-02_1_chart_multi/`](./01-02_1_chart_multi/) | アプリ | 複数銘柄カードグリッド（90日チャート＋PER/PBR/配当） |
@@ -28,9 +28,8 @@
 | 3-6 | [PCA 異常検知](https://minnanosaiban.github.io/hotline/blog/posts/03-06_price_anomaly/) | [`03-06_price_anomaly/`](./03-06_price_anomaly/) | 図 | PCA による共動崩壊の異常検知 |
 | EX-1 | [超短期の統計検証](https://minnanosaiban.github.io/hotline/blog/posts/EX-01_intraday_stats/) | [`EX-01_intraday_stats/`](./EX-01_intraday_stats/) | 分析＋図 | 5分足での超短期アノマリーの統計検証 |
 | EX-2 | [超短期の ML 検証](https://minnanosaiban.github.io/hotline/blog/posts/EX-02_intraday_ml/) | [`EX-02_intraday_ml/`](./EX-02_intraday_ml/) | 分析＋図 | 5分足での超短期予測の機械学習検証 |
-| EX-3 | [決算データで Note 記事の下書きを作る](https://minnanosaiban.github.io/hotline/blog/posts/EX-03_kessan_note_app/) | [`EX-03_kessan_note_app/`](./EX-03_kessan_note_app/) | アプリ | 決算 JSON から Note 記事プロンプトを生成 |
 
-> **種別について** ― 初期の分析ノート（1-1〜2-2）は `app.py` で動く Streamlit アプリ、2-3 以降は記事の図表を再生成するスクリプト（`*_make_images.py` / `analysis.py` / `thumb.py`）です。
+> **種別について** ― 初期の記事（1-1〜2-2）は `app.py` で動く Streamlit アプリ、2-3 以降は記事の図表を再生成するスクリプト（`*_make_images.py` / `analysis.py` / `thumb.py`）です。
 
 ## セットアップ
 
