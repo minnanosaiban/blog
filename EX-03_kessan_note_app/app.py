@@ -1,5 +1,5 @@
 """
-連載03 Appendix: 決算XBRL → Note 記事プロンプト生成
+分析ノート03 Appendix: 決算XBRL → Note 記事プロンプト生成
 
 - data/xbrl/ に決算短信（.htm/.zip）または有報（EDINET ZIP）を置く
 - 起動時に自動で data/json/ へ変換（未変換ファイルのみ）

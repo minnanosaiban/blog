@@ -1,5 +1,5 @@
 """
-連載02: マルチファクター・スコアボード ― 7 ファクター（Value/Quality/Growth/Consensus/Sentiment/Momentum/Risk）
+分析ノート02: マルチファクター・スコアボード ― 7 ファクター（Value/Quality/Growth/Consensus/Sentiment/Momentum/Risk）
 レーダーチャートで銘柄性格を可視化（Streamlit + Plotly）
 
 ローカル前提: C:\\stock_analysis 配下の rakunav CSV + yfinance 日足 parquet を読みに行く。
