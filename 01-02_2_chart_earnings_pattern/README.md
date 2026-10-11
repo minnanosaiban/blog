@@ -1,6 +1,6 @@
 # 記事 1-2: 決算データを無料で集める（決算パターングリッド）
 
-記事: [決算データを無料で集める ― EDINET・TDnet の公式 XBRL を活用](https://minnanosaiban.github.io/hotline/blog/posts/01-02_collect_other_data/)
+記事: [決算データを無料で集める ― EDINET・TDnet の公式 XBRL を活用](https://minnanosaiban.github.io/kessan-kabuka/posts/01-02_collect_other_data/)
 
 決算発表後の値動きを「上げ / 逆V字 / 無風 / V字 / 下げ」の5パターンに分類し、  
 4列カードグリッドで表示する Streamlit アプリです。  

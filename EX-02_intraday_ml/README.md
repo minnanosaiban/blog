@@ -2,7 +2,7 @@
 
 5 分足の次バー方向（上 / 下）を LightGBM で分類し、AUC・的中率に加えて「確信度上位だけ取引した場合のコスト控除後損益」で評価するツールです。
 
-記事: [LightGBM で「次の5分」を当てられるか ― 111万バーで検証](https://minnanosaiban.github.io/hotline/blog/posts/EX-02_intraday_ml/)
+記事: [LightGBM で「次の5分」を当てられるか ― 111万バーで検証](https://minnanosaiban.github.io/kessan-kabuka/posts/EX-02_intraday_ml/)
 
 ## ファイル
 

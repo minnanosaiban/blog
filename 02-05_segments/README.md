@@ -2,7 +2,7 @@
 
 有報の事業セグメント別データから「どの事業が業績を牽引しているか」を可視化する分析ツールです。
 
-記事: [セグメント分析 ― 連結に埋もれた「強い事業」を発進力スコアで探す](https://minnanosaiban.github.io/hotline/blog/posts/02-05_segment_analysis/)
+記事: [セグメント分析 ― 連結に埋もれた「強い事業」を発進力スコアで探す](https://minnanosaiban.github.io/kessan-kabuka/posts/02-05_segment_analysis/)
 
 ## ファイル
 

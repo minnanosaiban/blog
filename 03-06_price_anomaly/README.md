@@ -2,7 +2,7 @@
 
 「市場・同業は動いていないのに、その銘柄だけ突発的に上げ下げした日」を検出するツールです。買収・TOB・業績修正・事故など個別材料が出た銘柄のトリアージで、3-2 の個別ショック検出器を決算に依らない毎日・全銘柄版にしたもの。予測ではなく検出です。
 
-記事: [PCA 異常検知 ― 値動きの「共動の崩れ」で突発材料を検出](https://minnanosaiban.github.io/hotline/blog/posts/03-06_price_anomaly/)
+記事: [PCA 異常検知 ― 値動きの「共動の崩れ」で突発材料を検出](https://minnanosaiban.github.io/kessan-kabuka/posts/03-06_price_anomaly/)
 
 ## ファイル
 

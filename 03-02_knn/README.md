@@ -2,7 +2,7 @@
 
 K-NN 回帰で「類似決算群の CAR から自身の CAR を予測」を試み、**予測は失敗**（相関 r ≈ 0、ベースライン以下）する一方、**予測と実績の乖離が「個別ショック検出器」として機能する**ことを実証するツールです。
 
-記事: [K-NN 分類 ― 似た決算群から外れた「個別ショック」を検出](https://minnanosaiban.github.io/hotline/blog/posts/03-02_knn_prediction/)
+記事: [K-NN 分類 ― 似た決算群から外れた「個別ショック」を検出](https://minnanosaiban.github.io/kessan-kabuka/posts/03-02_knn_prediction/)
 
 ## ファイル
 

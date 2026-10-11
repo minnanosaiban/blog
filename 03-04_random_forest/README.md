@@ -2,7 +2,7 @@
 
 ランダムフォレストで決算 10 指標から CAR の方向（上 / 下）を予測し、**精度は多数派ベースライン未満**（＝当たらない）こと、そして **impurity 重要度と permutation 重要度が食い違う「重要度の罠」** を実証するツールです。
 
-記事: [ランダムフォレスト ― 予測は失敗、「特徴量重要度」の落とし穴を学ぶ](https://minnanosaiban.github.io/hotline/blog/posts/03-04_random_forest/)
+記事: [ランダムフォレスト ― 予測は失敗、「特徴量重要度」の落とし穴を学ぶ](https://minnanosaiban.github.io/kessan-kabuka/posts/03-04_random_forest/)
 
 ## ファイル
 

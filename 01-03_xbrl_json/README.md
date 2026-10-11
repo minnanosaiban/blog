@@ -1,6 +1,6 @@
 # 記事 1-3: 決算 XBRL を JSON に変換
 
-記事: [決算 XBRL を JSON に変換 ― 「決算そのもの」を分析、元売3社を比較](https://minnanosaiban.github.io/hotline/blog/posts/01-03_xbrl_to_json/)
+記事: [決算 XBRL を JSON に変換 ― 「決算そのもの」を分析、元売3社を比較](https://minnanosaiban.github.io/kessan-kabuka/posts/01-03_xbrl_to_json/)
 
 XBRL（決算短信・有報）を統一 JSON に変換し、それを使う **CFマトリクス比較アプリ**を収めています。
 

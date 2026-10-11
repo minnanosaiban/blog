@@ -2,7 +2,7 @@
 
 営業キャッシュフローと純利益の乖離から「利益の質」を評価するアクルーアル分析ツールです。
 
-記事: [アクルーアル分析 ― ＥＮＥＯＳの最高益に「現金の裏付け」はあるか](https://minnanosaiban.github.io/hotline/blog/posts/02-03_accrual_analysis/)
+記事: [アクルーアル分析 ― ＥＮＥＯＳの最高益に「現金の裏付け」はあるか](https://minnanosaiban.github.io/kessan-kabuka/posts/02-03_accrual_analysis/)
 
 ## ファイル
 

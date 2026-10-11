@@ -2,7 +2,7 @@
 
 5 分足と TDnet 開示ログを使い、超短期の定番シグナル（時間帯・寄りギャップ・モメンタム/平均回帰・リードラグ・場中開示ドリフト・連続 N 本/ギャップ閾値の条件付きパターン）を、共通の IN/OUT 分割と往復コスト控除で検証するツールです。
 
-記事: [超短期のエッジを統計で探す ― 5分足、コスト控除後に何が残るか](https://minnanosaiban.github.io/hotline/blog/posts/EX-01_intraday_stats/)
+記事: [超短期のエッジを統計で探す ― 5分足、コスト控除後に何が残るか](https://minnanosaiban.github.io/kessan-kabuka/posts/EX-01_intraday_stats/)
 
 ## ファイル
 

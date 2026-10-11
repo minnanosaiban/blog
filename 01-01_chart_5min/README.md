@@ -1,6 +1,6 @@
 # 記事 1-1: まず、「株価」を取得する
 
-記事: [まず、「株価」を取得する ― yfinance から parquet 保存、チャート、自作アプリまで](https://minnanosaiban.github.io/hotline/blog/posts/01-01_get_stock_prices/)
+記事: [まず、「株価」を取得する ― yfinance から parquet 保存、チャート、自作アプリまで](https://minnanosaiban.github.io/kessan-kabuka/posts/01-01_get_stock_prices/)
 
 複数銘柄の5分足ローソクチャートと騰落率テーブルを並べて表示する Streamlit アプリです。
 

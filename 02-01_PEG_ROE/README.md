@@ -2,7 +2,7 @@
 
 PEG × ROE で「成長と割安の両立」を発掘する GARP（Growth At a Reasonable Price）スクリーナーです。
 
-記事: [4象限で GARP を見る ― 「成長と割安の両立」銘柄を探す](https://minnanosaiban.github.io/hotline/blog/posts/02-01_garp_peg_roe/)
+記事: [4象限で GARP を見る ― 「成長と割安の両立」銘柄を探す](https://minnanosaiban.github.io/kessan-kabuka/posts/02-01_garp_peg_roe/)
 
 ## ファイル
 

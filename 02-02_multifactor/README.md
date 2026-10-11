@@ -2,7 +2,7 @@
 
 7 ファクター（Value / Quality / Growth / Consensus / Sentiment / Momentum / Risk）でレーダーチャート採点する銘柄分析ツールです。
 
-記事: [マルチファクタースコア ― 7軸で「全方位の優等生」を探す](https://minnanosaiban.github.io/hotline/blog/posts/02-02_multifactor_scoreboard/)
+記事: [マルチファクタースコア ― 7軸で「全方位の優等生」を探す](https://minnanosaiban.github.io/kessan-kabuka/posts/02-02_multifactor_scoreboard/)
 
 ## ファイル
 
